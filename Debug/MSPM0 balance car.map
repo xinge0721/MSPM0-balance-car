@@ -1,7 +1,7 @@
 ******************************************************************************
             TI ARM Clang Linker PC v4.0.2                      
 ******************************************************************************
->> Linked Sat May 17 23:28:38 2025
+>> Linked Sun May 18 07:53:14 2025
 
 OUTPUT FILE NAME:   <MSPM0 balance car.out>
 ENTRY POINT SYMBOL: "_c_int00_noinit_noargs"  address: 0000011d
