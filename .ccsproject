@@ -4,12 +4,12 @@
 	<ccsVariant value="50:Theia-based"/>
 	<ccsVersion value="70.1.1"/>
 	<deviceFamily value="TMS470"/>
-	<connection value="common/targetdb/connections/segger_j-link_connection.xml"/>
+	<connection value="common/targetdb/connections/TIXDS110_Connection.xml"/>
 	<executableActions value=""/>
 	<createSlaveProjects value=""/>
 	<ignoreDefaultDeviceSettings value="true"/>
 	<ignoreDefaultCCSSettings value="true"/>
-	<templateProperties value="id=empty_cpp_LP_MSPM0G3507_nortos_ticlang.projectspec.empty_cpp_LP_MSPM0G3507_nortos_ticlang,buildProfile=release,isHybrid=true"/>
+	<templateProperties value="id=empty_cpp_LP_MSPM0G3507_nortos_ticlang.projectspec.MSPM0 balance car,buildProfile=release,isHybrid=true"/>
 	<activeTargetConfiguration value="targetConfigs/MSPM0G3507.ccxml"/>
 	<isTargetConfigurationManual value="false"/>
 	<sourceLookupPath value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/driverlib"/>
