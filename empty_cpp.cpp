@@ -1,5 +1,5 @@
 #include "ti_msp_dl_config.h"
-#include "./OLED/OLED.h"
+#include "./Hardware/OLED/OLED.h"
 
 
 int main(void)
