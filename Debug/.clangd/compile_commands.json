@@ -18,5 +18,15 @@
       "directory" : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug",
       "command"   : "clang++ -D__MSPM0G3507__ -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car\" -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source/third_party/CMSIS/Core/Include\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/lib/clang/18/include\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c\" -xc++",
       "file"      : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Hardware/PID/pid.cpp"
+   },
+   {
+      "directory" : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug",
+      "command"   : "clang++ -D__MSPM0G3507__ -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car\" -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source/third_party/CMSIS/Core/Include\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/lib/clang/18/include\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c\" -xc++",
+      "file"      : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Hardware/HTS221/HTS221.cpp"
+   },
+   {
+      "directory" : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug",
+      "command"   : "clang++ -D__MSPM0G3507__ -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car\" -I\"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source/third_party/CMSIS/Core/Include\" -I\"C:/TI/mspm0_sdk_2_04_00_06/source\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/armv7em-ti-none-eabihf/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c++/v1\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/lib/clang/18/include\" -isystem\"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/include/c\" -xc++",
+      "file"      : "C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Hardware/Serial/Serial.cpp"
    }
 ]

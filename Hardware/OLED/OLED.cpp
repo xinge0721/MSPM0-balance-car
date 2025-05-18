@@ -15,9 +15,6 @@ void OLED::I2C::Start(void)
 	oled->Send_SCL(0);
 }
 
-
-
-
 /**
   * @brief  I2C停止
   * @param  无
