@@ -127,7 +127,7 @@ SUBDIRS := \
 . \
 Hardware/APP \
 Hardware/HTS221 \
+Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
-OLED \
 

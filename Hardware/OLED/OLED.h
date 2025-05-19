@@ -17,16 +17,20 @@ class OLED
         _sdapins = sdapins;
         Init();
     }
-    // 初始化无参构造函数（默认使用宏定义的参数）
-    // 暂时不用
-    // OLED()
-    // {
-    //     _scl = OLED_scl_PORT;
-    //     _sda = OLED_sda_PORT;
-    //     _sclpins = OLED_scl_PIN;
-    //     _sdapins = OLED_sda_PIN;
-    //     Init();
-    // }
+
+    // 初始化无参构造函数（在宏定义存在时使用宏定义的参数）
+    OLED()
+    {
+        #if defined(GPIO_OLED_PORT) && defined(GPIO_OLED_PIN_SCL_PIN) && defined(GPIO_OLED_PIN_SDA_PIN)
+            _scl = GPIO_OLED_PORT;
+            _sda = GPIO_OLED_PORT;
+            _sclpins = GPIO_OLED_PIN_SCL_PIN;
+            _sdapins = GPIO_OLED_PIN_SDA_PIN;
+            Init();
+        #else
+            #error "OLED GPIO宏未定义，请定义GPIO_OLED_PORT、GPIO_OLED_PIN_SCL_PIN和GPIO_OLED_PIN_SDA_PIN"
+        #endif
+    }
 
     void Init(void); //初始化
     void Clear(void); //清屏
@@ -55,15 +59,14 @@ class OLED
     // SDA 写
     void Send_SDA(bool x)
     {
-        x == 0 ? DL_GPIO_setPins(_sda, _sdapins) : DL_GPIO_clearPins(_sda, _sdapins);
+        (x == 1) ? DL_GPIO_setPins(_sda, _sdapins) : DL_GPIO_clearPins(_sda, _sdapins);
     }
 
     // SCL 写
     void Send_SCL(bool x)
     {
-        x == 0 ? DL_GPIO_setPins(_scl, _sclpins) : DL_GPIO_clearPins(_scl, _sclpins);
+        (x == 1) ? DL_GPIO_setPins(_scl, _sclpins) : DL_GPIO_clearPins(_scl, _sclpins);
     }
-
 
     GPIO_Regs* _scl;
     GPIO_Regs* _sda;

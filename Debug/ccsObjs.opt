@@ -3,9 +3,9 @@
 "./startup_mspm0g350x_ticlang.o"
 "./Hardware/APP/APP.o"
 "./Hardware/HTS221/HTS221.o"
+"./Hardware/OLED/OLED.o"
 "./Hardware/PID/pid.o"
 "./Hardware/Serial/Serial.o"
-"./OLED/oled.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs
 -llibc.a

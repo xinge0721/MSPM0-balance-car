@@ -14,36 +14,21 @@
 //              SDA    PA13（数据）    
 //******************************************************************************/
 #include "ti_msp_dl_config.h"
-#include "./OLED/oled.h"
-#include "./OLED/bmp.h"
-
+#include "./Hardware/OLED/OLED.h"
+OLED oled(GPIO_OLED_PORT,
+        GPIO_OLED_PIN_SCL_PIN,
+        GPIO_OLED_PORT,
+        GPIO_OLED_PIN_SDA_PIN);
+OLED oled2;
 int main( void )
 {
     SYSCFG_DL_init();
-    
-    uint8_t t=' ';
-    OLED_Init();		//初始化OLED
-    while(1) 
-    {		
-        OLED_DrawBMP(0,0,128,64,BMP1);
-        delay_ms(500);
-        OLED_Clear();
-        OLED_ShowChinese(0,0,0,16);//中
-        OLED_ShowChinese(18,0,1,16);//景
-        OLED_ShowChinese(36,0,2,16);//园
-        OLED_ShowChinese(54,0,3,16);//电
-        OLED_ShowChinese(72,0,4,16);//子
-        OLED_ShowChinese(90,0,5,16);//科
-        OLED_ShowChinese(108,0,6,16);//技
-        OLED_ShowString(8,2,(uint8_t *)"ZHONGJINGYUAN",16);
-        OLED_ShowString(20,4,(uint8_t *)"2014/05/01",16);
-        OLED_ShowString(0,6,(uint8_t *)"ASCII:",16);  
-        OLED_ShowString(63,6,(uint8_t *)"CODE:",16);
-        OLED_ShowChar(48,6,t,16);
-        t++;
-        if(t>'~')t=' ';
-        OLED_ShowNum(103,6,t,3,16);
-        delay_ms(500);
-        OLED_Clear();
-    }
+   
+   while(1)
+   {
+    oled.ShowString(1,1,"Hello World");
+    oled2.ShowString(2,1,"Hello World");
+    oled.ShowString(3,1,"Hello World");
+    oled2.ShowString(4,1,"Hello World");
+   }
 }

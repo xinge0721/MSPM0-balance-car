@@ -15,9 +15,9 @@ ORDERED_OBJS += \
 "./startup_mspm0g350x_ticlang.o" \
 "./Hardware/APP/APP.o" \
 "./Hardware/HTS221/HTS221.o" \
+"./Hardware/OLED/OLED.o" \
 "./Hardware/PID/pid.o" \
 "./Hardware/Serial/Serial.o" \
-"./OLED/oled.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -32,15 +32,15 @@ RMDIR := RMDIR /S/Q
 -include subdir_vars.mk
 -include Hardware/APP/subdir_vars.mk
 -include Hardware/HTS221/subdir_vars.mk
+-include Hardware/OLED/subdir_vars.mk
 -include Hardware/PID/subdir_vars.mk
 -include Hardware/Serial/subdir_vars.mk
--include OLED/subdir_vars.mk
 -include subdir_rules.mk
 -include Hardware/APP/subdir_rules.mk
 -include Hardware/HTS221/subdir_rules.mk
+-include Hardware/OLED/subdir_rules.mk
 -include Hardware/PID/subdir_rules.mk
 -include Hardware/Serial/subdir_rules.mk
--include OLED/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -158,9 +158,9 @@ MSPM0\ balance\ car.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "empty_cpp.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\HTS221\HTS221.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" "OLED\oled.o" 
-	-$(RM) "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "OLED\oled.d" 
-	-$(RM) "empty_cpp.d" "Hardware\APP\APP.d" "Hardware\HTS221\HTS221.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" 
+	-$(RM) "empty_cpp.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\HTS221\HTS221.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" 
+	-$(RM) "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" 
+	-$(RM) "empty_cpp.d" "Hardware\APP\APP.d" "Hardware\HTS221\HTS221.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
