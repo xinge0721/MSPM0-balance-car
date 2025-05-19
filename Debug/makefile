@@ -13,10 +13,11 @@ ORDERED_OBJS += \
 "./empty_cpp.o" \
 "./ti_msp_dl_config.o" \
 "./startup_mspm0g350x_ticlang.o" \
+"./Hardware/APP/APP.o" \
 "./Hardware/HTS221/HTS221.o" \
-"./Hardware/OLED/OLED.o" \
 "./Hardware/PID/pid.o" \
 "./Hardware/Serial/Serial.o" \
+"./OLED/oled.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -29,15 +30,17 @@ RMDIR := RMDIR /S/Q
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir_vars.mk
+-include Hardware/APP/subdir_vars.mk
 -include Hardware/HTS221/subdir_vars.mk
--include Hardware/OLED/subdir_vars.mk
 -include Hardware/PID/subdir_vars.mk
 -include Hardware/Serial/subdir_vars.mk
+-include OLED/subdir_vars.mk
 -include subdir_rules.mk
+-include Hardware/APP/subdir_rules.mk
 -include Hardware/HTS221/subdir_rules.mk
--include Hardware/OLED/subdir_rules.mk
 -include Hardware/PID/subdir_rules.mk
 -include Hardware/Serial/subdir_rules.mk
+-include OLED/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -148,16 +151,16 @@ all: $(OBJS) $(GEN_CMDS)
 MSPM0\ balance\ car.out: $(OBJS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/bin/tiarmclang.exe" @"device.opt"  -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O2 -gdwarf-3 -Wl,-m"MSPM0 balance car.map" -Wl,-i"C:/TI/mspm0_sdk_2_04_00_06/source" -Wl,-i"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car" -Wl,-i"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug/syscfg" -Wl,-i"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="MSPM0 balance car_linkInfo.xml" -Wl,--rom_model -o "MSPM0 balance car.out" $(ORDERED_OBJS)
+	"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/bin/tiarmclang.exe" @"device.opt"  -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O0 -gdwarf-3 -Wl,-m"MSPM0 balance car.map" -Wl,-i"C:/TI/mspm0_sdk_2_04_00_06/source" -Wl,-i"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car" -Wl,-i"C:/Users/xinge/workspace_ccstheia/MSPM0 balance car/Debug/syscfg" -Wl,-i"D:/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.2.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="MSPM0 balance car_linkInfo.xml" -Wl,--rom_model -o "MSPM0 balance car.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "empty_cpp.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\HTS221\HTS221.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" 
-	-$(RM) "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" 
-	-$(RM) "empty_cpp.d" "Hardware\HTS221\HTS221.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" 
+	-$(RM) "empty_cpp.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\HTS221\HTS221.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" "OLED\oled.o" 
+	-$(RM) "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "OLED\oled.d" 
+	-$(RM) "empty_cpp.d" "Hardware\APP\APP.d" "Hardware\HTS221\HTS221.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

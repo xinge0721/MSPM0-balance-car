@@ -11,30 +11,41 @@
  */
 const GPIO   = scripting.addModule("/ti/driverlib/GPIO", {}, false);
 const GPIO1  = GPIO.addInstance();
-const GPIO2  = GPIO.addInstance();
 const SYSCTL = scripting.addModule("/ti/driverlib/SYSCTL");
+const UART   = scripting.addModule("/ti/driverlib/UART", {}, false);
+const UART1  = UART.addInstance();
 
 /**
  * Write custom configuration values to the imported modules.
  */
-GPIO1.$name                   = "hahaha";
-GPIO1.associatedPins[0].$name = "PIN_0";
+GPIO1.$name                          = "GPIO_OLED";
+GPIO1.associatedPins.create(2);
+GPIO1.associatedPins[0].$name        = "PIN_SCL";
+GPIO1.associatedPins[0].assignedPort = "PORTA";
+GPIO1.associatedPins[0].assignedPin  = "0";
+GPIO1.associatedPins[1].$name        = "PIN_SDA";
+GPIO1.associatedPins[1].assignedPort = "PORTA";
+GPIO1.associatedPins[1].assignedPin  = "1";
 
 const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 
-GPIO2.$name                   = "wawawwa";
-GPIO2.associatedPins[0].$name = "PIN_1";
-
 SYSCTL.forceDefaultClkConfig = true;
 SYSCTL.clockTreeEn           = true;
+
+UART1.$name             = "UART_0";
+UART1.txPinConfig.$name = "ti_driverlib_gpio_GPIOPinGeneric0";
+UART1.rxPinConfig.$name = "ti_driverlib_gpio_GPIOPinGeneric1";
 
 /**
  * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
  * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
  * re-solve from scratch.
  */
-GPIO1.associatedPins[0].pin.$suggestSolution = "PB13";
+GPIO1.associatedPins[0].pin.$suggestSolution = "PA0";
+GPIO1.associatedPins[1].pin.$suggestSolution = "PA1";
 Board.peripheral.$suggestSolution            = "DEBUGSS";
 Board.peripheral.swclkPin.$suggestSolution   = "PA20";
 Board.peripheral.swdioPin.$suggestSolution   = "PA19";
-GPIO2.associatedPins[0].pin.$suggestSolution = "PB14";
+UART1.peripheral.$suggestSolution            = "UART0";
+UART1.peripheral.rxPin.$suggestSolution      = "PA11";
+UART1.peripheral.txPin.$suggestSolution      = "PA10";

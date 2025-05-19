@@ -1,7 +1,7 @@
 #ifndef __OLED_H
 #define __OLED_H
 #include "ti_msp_dl_config.h"
-
+#include "OLED_Font.h"
 // 声明8x16字体数组
 extern const unsigned char OLED_F8x16[][16];
 
@@ -9,7 +9,7 @@ class OLED
 {
     public:
     // 初始化有参构造函数(手动传入参数)
-    OLED(GPIO_Regs* scl, GPIO_Regs* sda, uint32_t sclpins, uint32_t sdapins)
+    OLED(GPIO_Regs* scl, uint32_t sclpins, GPIO_Regs* sda, uint32_t sdapins)
     {
         _scl = scl;
         _sda = sda;
@@ -18,6 +18,7 @@ class OLED
         Init();
     }
     // 初始化无参构造函数（默认使用宏定义的参数）
+    // 暂时不用
     // OLED()
     // {
     //     _scl = OLED_scl_PORT;
@@ -29,8 +30,8 @@ class OLED
 
     void Init(void); //初始化
     void Clear(void); //清屏
-    void ShowChar(uint8_t Line, uint8_t Column, char Char); //显示字符
-    void ShowString(uint8_t Line, uint8_t Column, char *String); //显示字符串
+    void ShowChar(uint8_t Line, uint8_t Column,const char Char); //显示字符
+    void ShowString(uint8_t Line, uint8_t Column, const char *String); //显示字符串
     void ShowNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length); //显示数字
     void ShowSignedNum(uint8_t Line, uint8_t Column, int32_t Number, uint8_t Length); //显示有符号数字  
     void ShowHexNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Length); //显示十六进制数字
