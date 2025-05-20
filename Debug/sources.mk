@@ -130,4 +130,5 @@ Hardware/HTS221 \
 Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
+MPU6050 \
 

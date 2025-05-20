@@ -78,6 +78,22 @@ extern "C" {
 
 
 
+
+/* Defines for I2C_MPU6050 */
+#define I2C_MPU6050_INST                                                    I2C0
+#define I2C_MPU6050_INST_IRQHandler                              I2C0_IRQHandler
+#define I2C_MPU6050_INST_INT_IRQN                                  I2C0_INT_IRQn
+#define I2C_MPU6050_BUS_SPEED_HZ                                          400000
+#define GPIO_I2C_MPU6050_SDA_PORT                                          GPIOA
+#define GPIO_I2C_MPU6050_SDA_PIN                                  DL_GPIO_PIN_28
+#define GPIO_I2C_MPU6050_IOMUX_SDA                                (IOMUX_PINCM3)
+#define GPIO_I2C_MPU6050_IOMUX_SDA_FUNC                 IOMUX_PINCM3_PF_I2C0_SDA
+#define GPIO_I2C_MPU6050_SCL_PORT                                          GPIOA
+#define GPIO_I2C_MPU6050_SCL_PIN                                  DL_GPIO_PIN_31
+#define GPIO_I2C_MPU6050_IOMUX_SCL                                (IOMUX_PINCM6)
+#define GPIO_I2C_MPU6050_IOMUX_SCL_FUNC                 IOMUX_PINCM6_PF_I2C0_SCL
+
+
 /* Defines for UART_0 */
 #define UART_0_INST                                                        UART0
 #define UART_0_INST_FREQUENCY                                           32000000
@@ -99,6 +115,16 @@ extern "C" {
 
 
 
+/* Port definition for Pin Group GPIO_MPU6050 */
+#define GPIO_MPU6050_PORT                                                (GPIOB)
+
+/* Defines for PIN_INT: GPIOB.13 with pinCMx 30 on package pin 1 */
+// pins affected by this interrupt request:["PIN_INT"]
+#define GPIO_MPU6050_INT_IRQN                                   (GPIOB_INT_IRQn)
+#define GPIO_MPU6050_INT_IIDX                   (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
+#define GPIO_MPU6050_PIN_INT_IIDX                           (DL_GPIO_IIDX_DIO13)
+#define GPIO_MPU6050_PIN_INT_PIN                                (DL_GPIO_PIN_13)
+#define GPIO_MPU6050_PIN_INT_IOMUX                               (IOMUX_PINCM30)
 /* Port definition for Pin Group GPIO_OLED */
 #define GPIO_OLED_PORT                                                   (GPIOA)
 
@@ -109,14 +135,18 @@ extern "C" {
 #define GPIO_OLED_PIN_SDA_PIN                                    (DL_GPIO_PIN_1)
 #define GPIO_OLED_PIN_SDA_IOMUX                                   (IOMUX_PINCM2)
 
+
+
 /* clang-format on */
 
 void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+void SYSCFG_DL_I2C_MPU6050_init(void);
 void SYSCFG_DL_UART_0_init(void);
 
+void SYSCFG_DL_SYSTICK_init(void);
 
 bool SYSCFG_DL_saveConfiguration(void);
 bool SYSCFG_DL_restoreConfiguration(void);

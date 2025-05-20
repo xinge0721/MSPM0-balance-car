@@ -6,6 +6,11 @@
 "./Hardware/OLED/OLED.o"
 "./Hardware/PID/pid.o"
 "./Hardware/Serial/Serial.o"
+"./MPU6050/inv_mpu.o"
+"./MPU6050/inv_mpu_dmp_motion_driver.o"
+"./MPU6050/mpu6050.o"
+"./MPU6050/mspm0_clock.o"
+"./MPU6050/mspm0_i2c.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs
 -llibc.a
