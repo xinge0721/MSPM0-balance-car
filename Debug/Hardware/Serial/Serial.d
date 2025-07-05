@@ -1,6 +1,6 @@
 # FIXED
 
-Hardware/Serial/Serial.o: ../Hardware/Serial/Serial.cpp \
+Hardware/Serial/Serial.o: ../Hardware/Serial/Serial.c \
  ../Hardware/Serial/Serial.h ../sys.h \
  ti_msp_dl_config.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h \

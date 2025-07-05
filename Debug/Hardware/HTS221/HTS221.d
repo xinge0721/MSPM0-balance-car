@@ -1,6 +1,6 @@
 # FIXED
 
-Hardware/HTS221/HTS221.o: ../Hardware/HTS221/HTS221.cpp \
+Hardware/HTS221/HTS221.o: ../Hardware/HTS221/HTS221.c \
  ../Hardware/HTS221/HTS221.h ../sys.h \
  ../Hardware/Serial/Serial.h \
  ../sys.h \

@@ -10,19 +10,19 @@ GEN_OPTS__FLAG := @"./device.opt"
 GEN_CMDS__FLAG := -Wl,-l"./device_linker.cmd" 
 
 ORDERED_OBJS += \
-"./empty_cpp.o" \
+"./empty.o" \
 "./ti_msp_dl_config.o" \
 "./startup_mspm0g350x_ticlang.o" \
 "./Hardware/APP/APP.o" \
 "./Hardware/HTS221/HTS221.o" \
+"./Hardware/MPU6050/inv_mpu.o" \
+"./Hardware/MPU6050/inv_mpu_dmp_motion_driver.o" \
+"./Hardware/MPU6050/mpu6050.o" \
+"./Hardware/MPU6050/mspm0_clock.o" \
+"./Hardware/MPU6050/mspm0_i2c.o" \
 "./Hardware/OLED/OLED.o" \
 "./Hardware/PID/pid.o" \
 "./Hardware/Serial/Serial.o" \
-"./MPU6050/inv_mpu.o" \
-"./MPU6050/inv_mpu_dmp_motion_driver.o" \
-"./MPU6050/mpu6050.o" \
-"./MPU6050/mspm0_clock.o" \
-"./MPU6050/mspm0_i2c.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -37,17 +37,17 @@ RMDIR := RMDIR /S/Q
 -include subdir_vars.mk
 -include Hardware/APP/subdir_vars.mk
 -include Hardware/HTS221/subdir_vars.mk
+-include Hardware/MPU6050/subdir_vars.mk
 -include Hardware/OLED/subdir_vars.mk
 -include Hardware/PID/subdir_vars.mk
 -include Hardware/Serial/subdir_vars.mk
--include MPU6050/subdir_vars.mk
 -include subdir_rules.mk
 -include Hardware/APP/subdir_rules.mk
 -include Hardware/HTS221/subdir_rules.mk
+-include Hardware/MPU6050/subdir_rules.mk
 -include Hardware/OLED/subdir_rules.mk
 -include Hardware/PID/subdir_rules.mk
 -include Hardware/Serial/subdir_rules.mk
--include MPU6050/subdir_rules.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -165,9 +165,8 @@ MSPM0\ balance\ car.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "empty_cpp.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\HTS221\HTS221.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" "MPU6050\inv_mpu.o" "MPU6050\inv_mpu_dmp_motion_driver.o" "MPU6050\mpu6050.o" "MPU6050\mspm0_clock.o" "MPU6050\mspm0_i2c.o" 
-	-$(RM) "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" 
-	-$(RM) "empty_cpp.d" "Hardware\APP\APP.d" "Hardware\HTS221\HTS221.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" "MPU6050\inv_mpu.d" "MPU6050\inv_mpu_dmp_motion_driver.d" "MPU6050\mpu6050.d" "MPU6050\mspm0_clock.d" "MPU6050\mspm0_i2c.d" 
+	-$(RM) "empty.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\HTS221\HTS221.o" "Hardware\MPU6050\inv_mpu.o" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.o" "Hardware\MPU6050\mpu6050.o" "Hardware\MPU6050\mspm0_clock.o" "Hardware\MPU6050\mspm0_i2c.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" 
+	-$(RM) "empty.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "Hardware\APP\APP.d" "Hardware\HTS221\HTS221.d" "Hardware\MPU6050\inv_mpu.d" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.d" "Hardware\MPU6050\mpu6050.d" "Hardware\MPU6050\mspm0_clock.d" "Hardware\MPU6050\mspm0_i2c.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

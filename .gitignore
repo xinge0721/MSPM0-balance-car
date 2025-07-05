@@ -1,0 +1,24 @@
+/Debug
+Debug/
+
+# Ignore compiled files and objects
+*.o
+*.obj
+*.d
+*.out
+*.map
+*.opt
+*.a
+*.lib
+*.exe
+*.axf
+
+# Ignore TI Code Composer Studio specific files
+*.syscfg
+*.ccxml
+targetConfigs/
+*_linkInfo.xml
+*.genlibs
+
+# Ignore generated HTML files
+*.html 

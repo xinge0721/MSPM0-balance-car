@@ -5,22 +5,22 @@
 SHELL = cmd.exe
 
 # Add inputs and outputs from these tool invocations to the build variables 
-CPP_SRCS += \
-../Hardware/OLED/OLED.cpp 
+C_SRCS += \
+../Hardware/OLED/OLED.c 
+
+C_DEPS += \
+./Hardware/OLED/OLED.d 
 
 OBJS += \
 ./Hardware/OLED/OLED.o 
 
-CPP_DEPS += \
-./Hardware/OLED/OLED.d 
-
 OBJS__QUOTED += \
 "Hardware\OLED\OLED.o" 
 
-CPP_DEPS__QUOTED += \
+C_DEPS__QUOTED += \
 "Hardware\OLED\OLED.d" 
 
-CPP_SRCS__QUOTED += \
-"../Hardware/OLED/OLED.cpp" 
+C_SRCS__QUOTED += \
+"../Hardware/OLED/OLED.c" 
 
 

@@ -1,6 +1,6 @@
 # FIXED
 
-Hardware/OLED/OLED.o: ../Hardware/OLED/OLED.cpp ../Hardware/OLED/OLED.h \
+Hardware/OLED/OLED.o: ../Hardware/OLED/OLED.c ../Hardware/OLED/OLED.h \
  ti_msp_dl_config.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/DeviceFamily.h \

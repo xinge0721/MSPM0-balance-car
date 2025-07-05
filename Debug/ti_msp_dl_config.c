@@ -100,13 +100,57 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 
     DL_GPIO_initDigitalOutput(GPIO_OLED_PIN_SDA_IOMUX);
 
-    DL_GPIO_clearPins(GPIO_OLED_PORT, GPIO_OLED_PIN_SCL_PIN |
+    DL_GPIO_initDigitalOutput(Control_AIN1_IOMUX);
+
+    DL_GPIO_initDigitalOutput(Control_AIN2_IOMUX);
+
+    DL_GPIO_initDigitalOutput(Control_BIN1_IOMUX);
+
+    DL_GPIO_initDigitalOutput(Control_BIN2_IOMUX);
+
+    DL_GPIO_initDigitalInputFeatures(encoder_left_A_IOMUX,
+		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_UP,
+		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
+
+    DL_GPIO_initDigitalInputFeatures(encoder_left_B_IOMUX,
+		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_UP,
+		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
+
+    DL_GPIO_initDigitalInputFeatures(encoder_right_A_IOMUX,
+		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_UP,
+		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
+
+    DL_GPIO_initDigitalInputFeatures(encoder_right_B_IOMUX,
+		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_UP,
+		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
+
+    DL_GPIO_clearPins(GPIOA, GPIO_OLED_PIN_SCL_PIN |
 		GPIO_OLED_PIN_SDA_PIN);
-    DL_GPIO_enableOutput(GPIO_OLED_PORT, GPIO_OLED_PIN_SCL_PIN |
-		GPIO_OLED_PIN_SDA_PIN);
-    DL_GPIO_setLowerPinsPolarity(GPIO_MPU6050_PORT, DL_GPIO_PIN_13_EDGE_FALL);
-    DL_GPIO_clearInterruptStatus(GPIO_MPU6050_PORT, GPIO_MPU6050_PIN_INT_PIN);
-    DL_GPIO_enableInterrupt(GPIO_MPU6050_PORT, GPIO_MPU6050_PIN_INT_PIN);
+    DL_GPIO_setPins(GPIOA, Control_AIN1_PIN |
+		Control_AIN2_PIN);
+    DL_GPIO_enableOutput(GPIOA, GPIO_OLED_PIN_SCL_PIN |
+		GPIO_OLED_PIN_SDA_PIN |
+		Control_AIN1_PIN |
+		Control_AIN2_PIN);
+    DL_GPIO_setLowerPinsPolarity(GPIOA, DL_GPIO_PIN_10_EDGE_RISE_FALL |
+		DL_GPIO_PIN_11_EDGE_RISE_FALL);
+    DL_GPIO_clearInterruptStatus(GPIOA, encoder_right_A_PIN |
+		encoder_right_B_PIN);
+    DL_GPIO_enableInterrupt(GPIOA, encoder_right_A_PIN |
+		encoder_right_B_PIN);
+    DL_GPIO_clearPins(GPIOB, Control_BIN1_PIN |
+		Control_BIN2_PIN);
+    DL_GPIO_enableOutput(GPIOB, Control_BIN1_PIN |
+		Control_BIN2_PIN);
+    DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_13_EDGE_FALL |
+		DL_GPIO_PIN_4_EDGE_RISE_FALL |
+		DL_GPIO_PIN_5_EDGE_RISE_FALL);
+    DL_GPIO_clearInterruptStatus(GPIOB, GPIO_MPU6050_PIN_INT_PIN |
+		encoder_left_A_PIN |
+		encoder_left_B_PIN);
+    DL_GPIO_enableInterrupt(GPIOB, GPIO_MPU6050_PIN_INT_PIN |
+		encoder_left_A_PIN |
+		encoder_left_B_PIN);
 
 }
 

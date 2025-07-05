@@ -127,8 +127,8 @@ SUBDIRS := \
 . \
 Hardware/APP \
 Hardware/HTS221 \
+Hardware/MPU6050 \
 Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
-MPU6050 \
 
