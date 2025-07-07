@@ -2,6 +2,8 @@
     "files.associations": {
         "serial.h": "c",
         "cstdint": "cpp",
-        "oled.h": "c"
+        "oled.h": "c",
+        "ti_msp_dl_config.h": "c",
+        "encoder.h": "c"
     }
 }

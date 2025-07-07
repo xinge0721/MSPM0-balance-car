@@ -1,5 +1,6 @@
 #ifndef __SYS_H
 #define __SYS_H
+#include "ti_msp_dl_config.h"
 
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */
@@ -24,6 +25,8 @@ typedef volatile unsigned char  vu8;  /* 易变无符号8位整型 */
 typedef volatile unsigned short vu16; /* 易变无符号16位整型 */
 typedef volatile unsigned int   vu32; /* 易变无符号32位整型 */
 
+
+void system_init(void);
 
 
 #endif /* __SYS_H */ 

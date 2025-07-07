@@ -126,9 +126,12 @@ GEN_OPTS__QUOTED :=
 SUBDIRS := \
 . \
 Hardware/APP \
+Hardware/Encoder \
 Hardware/HTS221 \
 Hardware/MPU6050 \
 Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
+system/delay \
+system/sys \
 

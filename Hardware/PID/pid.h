@@ -1,6 +1,6 @@
 #ifndef __PID_H
 #define __PID_H
-#include "../../sys.h"
+#include "../../system/sys/sys.h"
 // 定义PID结构体
 typedef struct pid
 {

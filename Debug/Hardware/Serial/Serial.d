@@ -1,7 +1,7 @@
 # FIXED
 
 Hardware/Serial/Serial.o: ../Hardware/Serial/Serial.c \
- ../Hardware/Serial/Serial.h ../sys.h \
+ ../Hardware/Serial/Serial.h ../system/sys/sys.h \
  ti_msp_dl_config.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/DeviceFamily.h \
@@ -77,7 +77,7 @@ Hardware/Serial/Serial.o: ../Hardware/Serial/Serial.c \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h
 ../Hardware/Serial/Serial.h:
-../sys.h:
+../system/sys/sys.h:
 ti_msp_dl_config.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/DeviceFamily.h:

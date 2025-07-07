@@ -3,28 +3,8 @@
 // 全局GPIO配置变量
 GPIO_Regs* OLED_SCL_PORT;
 GPIO_Regs* OLED_SDA_PORT;
-uint32_t OLED_SCL_PIN;
-uint32_t OLED_SDA_PIN;
-
-/**
-  * @brief  SDA引脚输出
-  * @param  x: 0或1
-  * @retval 无
-  */
-void OLED_Send_SDA(uint8_t x)
-{
-	(x == 1) ? DL_GPIO_setPins(OLED_SDA_PORT, OLED_SDA_PIN) : DL_GPIO_clearPins(OLED_SDA_PORT, OLED_SDA_PIN);
-}
-
-/**
-  * @brief  SCL引脚输出
-  * @param  x: 0或1
-  * @retval 无
-  */
-void OLED_Send_SCL(uint8_t x)
-{
-	(x == 1) ? DL_GPIO_setPins(OLED_SCL_PORT, OLED_SCL_PIN) : DL_GPIO_clearPins(OLED_SCL_PORT, OLED_SCL_PIN);
-}
+uint32_t _OLED_SCL_PIN;
+uint32_t _OLED_SDA_PIN;
 
 /**
   * @brief  I2C开始
@@ -33,10 +13,10 @@ void OLED_Send_SCL(uint8_t x)
   */
 void OLED_I2C_Start(void)
 {
-	OLED_Send_SDA(1);
-	OLED_Send_SCL(1);
-	OLED_Send_SDA(0);
-	OLED_Send_SCL(0);
+	OLED_SDA_Set();
+	OLED_SCL_Set();
+	OLED_SDA_Clr();
+	OLED_SCL_Clr();
 }
 
 /**
@@ -46,9 +26,9 @@ void OLED_I2C_Start(void)
   */
 void OLED_I2C_Stop(void)
 {
-	OLED_Send_SDA(0);
-	OLED_Send_SCL(1);
-	OLED_Send_SDA(1);
+	OLED_SDA_Clr();
+	OLED_SCL_Set();
+	OLED_SDA_Set();
 }
 
 /**
@@ -61,12 +41,19 @@ void OLED_I2C_SendByte(uint8_t Byte)
 	uint8_t i;
 	for (i = 0; i < 8; i++)
 	{
-		OLED_Send_SDA(Byte & (0x80 >> i));
-		OLED_Send_SCL(1);
-		OLED_Send_SCL(0);
+		if (Byte & (0x80 >> i))
+		{
+			OLED_SDA_Set();
+		}
+		else
+		{
+			OLED_SDA_Clr();
+		}
+		OLED_SCL_Set();
+		OLED_SCL_Clr();
 	}
-	OLED_Send_SCL(1);	//额外的一个时钟，不处理应答信号
-	OLED_Send_SCL(0);
+	OLED_SCL_Set();	//额外的一个时钟，不处理应答信号
+	OLED_SCL_Clr();
 }
 
 /**
@@ -282,8 +269,8 @@ void OLED_Init_Custom(GPIO_Regs* scl, uint32_t sclpin, GPIO_Regs* sda, uint32_t 
 	// 保存GPIO配置
 	OLED_SCL_PORT = scl;
 	OLED_SDA_PORT = sda;
-	OLED_SCL_PIN = sclpin;
-	OLED_SDA_PIN = sdapin;
+	_OLED_SCL_PIN = sclpin;
+	_OLED_SDA_PIN = sdapin;
 	
 	for (i = 0; i < 1000; i++)			//上电延时
 	{
@@ -337,14 +324,14 @@ void OLED_Init_Custom(GPIO_Regs* scl, uint32_t sclpin, GPIO_Regs* sda, uint32_t 
   * @param  无
   * @retval 无
   */
- #if defined(GPIO_OLED_PORT) && defined(GPIO_OLED_PIN_SCL_PIN) && defined(GPIO_OLED_PIN_SDA_PIN)
+#if defined(OLED_PORT) && defined(OLED_SCL_PIN) && defined(OLED_SDA_PIN)
 	void OLED_Init(void)
 	{
-		OLED_Init_Custom(GPIO_OLED_PORT, GPIO_OLED_PIN_SCL_PIN, GPIO_OLED_PORT, GPIO_OLED_PIN_SDA_PIN);
+		OLED_Init_Custom(OLED_PORT, OLED_SCL_PIN, OLED_PORT, OLED_SDA_PIN);
 	}
- #else
+#else
 	void OLED_Init(GPIO_Regs* scl, uint32_t sclpin, GPIO_Regs* sda, uint32_t sdapin)
 	{
 		OLED_Init_Custom(scl, sclpin, sda, sdapin);
 	}
- #endif
+#endif

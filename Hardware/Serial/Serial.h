@@ -1,6 +1,6 @@
 #ifndef __SERIAL_H
 #define __SERIAL_H
-#include "../../sys.h"
+#include "../../system/sys/sys.h"
 #include "ti_msp_dl_config.h"
 
 // 定义接收数据变量

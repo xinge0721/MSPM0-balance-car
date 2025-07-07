@@ -4,6 +4,8 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+#include "../../system/sys/sys.h"
+#include "../../system/delay/delay.h"
 
 int mspm0_delay_ms(unsigned long num_ms);
 int mspm0_get_clock_ms(unsigned long *count);

@@ -1,205 +1,109 @@
 #include "ti_msp_dl_config.h"
-#include "./Hardware/OLED/OLED.h"
+#include "system/sys/sys.h"
+#include "system/delay/delay.h"
+#include "Hardware/Encoder/Encoder.h"
 #include <stdio.h>
-#include "sys.h"
-// 定义一个全局变量，用来记录左边轮子编码器的计数值。
-// 使用 volatile 关键字，是因为这个变量会在中断服务函数中被修改，
-// 这样可以防止编译器进行一些可能导致错误的优化。
-volatile int Encoder_Left_Value = 0;
-// 定义一个全局变量，用来记录右边轮子编码器的计数值。
-volatile int Encoder_Right_Value = 0;
+#include "./Hardware/OLED/OLED.h"
+// 左编码器值
+int left_encoder_value = 0;
+// 右编码器值
+int right_encoder_value = 0;
+/**
+  * @brief  AIN_1引脚输出
+  * @param  x: 0或1
+  * @retval 无
+  */
+ void AIN_1_Send_SDA(bool x)
+ {
+     (x == 1) ? DL_GPIO_setPins(Control_AIN1_PORT, Control_AIN1_PIN) : DL_GPIO_clearPins(Control_AIN1_PORT, Control_AIN1_PIN);
+ }
+ 
+ /**
+   * @brief  AIN_2引脚输出
+   * @param  x: 0或1
+   * @retval 无
+   */
+ void AIN_2_Send_SCL(bool x)
+ {
+     (x == 1) ? DL_GPIO_setPins(Control_AIN1_PORT, Control_AIN2_PIN) : DL_GPIO_clearPins(Control_AIN1_PORT, Control_AIN2_PIN);
+ }
+
+//  前进    
+void forward(void)
+{
+    AIN_1_Send_SDA(1);
+    AIN_2_Send_SCL(0);
+}
+
+// 后退
+void back(void)
+{
+    AIN_1_Send_SDA(0);
+    AIN_2_Send_SCL(1);
+}
+char str[30]={0};
+int i = 0;
 
 int main( void )
 {
+    printf("开始\n");
     // 这个函数是TI官方提供的，用来初始化芯片的各种配置，比如时钟、GPIO等。
     SYSCFG_DL_init();
-    // 初始化OLED屏幕
-   OLED_Init();
-    // 使能(打开) GPIOB 端口的中断。左轮编码器的引脚接在GPIOB上。
-    NVIC_EnableIRQ(GPIOB_INT_IRQn);
-    // 使能(打开) GPIOA 端口的中断。右轮编码器的引脚接在GPIOA上。
-    NVIC_EnableIRQ(GPIOA_INT_IRQn);
+    NVIC_ClearPendingIRQ(TIMER_0_INST_INT_IRQN);
+    //使能定时器中断
+    NVIC_EnableIRQ(TIMER_0_INST_INT_IRQN);
 
-    // 这是一个死循环，单片机程序的主体，代码会一直在这里运行。
-   while(1)
-   {
-    // 通过串口打印出左右编码器的计数值，方便我们调试观察。
-    printf("Left: %d, Right: %d\n", Encoder_Left_Value, Encoder_Right_Value);
-    // 延时100毫秒，防止打印速度太快，刷屏看不清。
-    delay_ms(100);
-   }
+    OLED_Init();
+
+    // // 初始化系统中断
+    // // 使能(打开) 编码器 端口的中断。左轮编码器的引脚接在GPIOA上。
+    NVIC_EnableIRQ(encoder_INT_IRQN);
+
+
+    while(1)
+    {
+        // 在第一行显示左轮编码器值
+        OLED_ShowString(1, 1, "L:");
+
+        OLED_ShowNum(1, 3, (uint32_t)left_encoder_value, 5);
+    
+        // 在第二行显示右轮编码器值
+        OLED_ShowString(2, 1, "R:");
+
+        OLED_ShowSignedNum(2, 3, right_encoder_value, 5);
+        
+        OLED_ShowString(3, 1, "i:");//判断是否进入中断
+
+        OLED_ShowSignedNum(3, 3, i, 5);
+        
+        printf("下一回合\n");
+        forward();
+        DL_TimerG_setCaptureCompareValue(PWM_serov_INST,0,GPIO_PWM_serov_C0_IDX);
+        
+        // 添加适当的延时，避免刷新过快
+        delay_ms(100);
+    }
 }
 
-// 这是中断服务函数(ISR)，专门处理第一组(Group 1)的中断。
-// 当GPIOA或者GPIOB上我们设定好的引脚电平发生变化时，程序就会暂停正在做的事情，
-// 自动跳转到这里来执行代码。
-void GROUP1_IRQHandler(void)
+int consthh;
+//定时器的中断服务函数 已配置为1秒的周期
+void TIMER_0_INST_IRQHandler(void)
 {
-    // 使用 switch 语句来判断具体是哪个外设触发了中断。
-    // 一个中断组里可能包含多个中断源（比如GPIOA, GPIOB, 定时器等）。
-    switch( DL_Interrupt_getPendingGroup(DL_INTERRUPT_GROUP_1) )
+
+    //如果产生了定时器中断
+    switch( DL_TimerG_getPendingInterrupt(TIMER_0_INST) )
     {
-        // Case 1: 如果是 GPIOA 端口触发了中断 (右轮编码器接在GPIOA)
-        case DL_INTERRUPT_GROUP1_IIDX_GPIOA:
-        {
-            // 读取GPIOA端口上，哪些引脚的中断被触发了。
-            // 我们只关心右轮编码器的A相和B相引脚。
-            uint32_t gpio_interrupt_status = DL_GPIO_getEnabledInterruptStatus(GPIOA, encoder_right_A_PIN | encoder_right_B_PIN);
-             
-            // 判断是不是右轮的 A 相引脚触发了中断
-            if(gpio_interrupt_status & encoder_right_A_PIN)
-            {
-                // 读取A相引脚当前的电平 (高电平/真)
-                if(DL_GPIO_readPins(encoder_right_A_PORT, encoder_right_A_PIN))
-                {
-                    // 如果此时B相也是高电平
-                    if(DL_GPIO_readPins(encoder_right_B_PORT, encoder_right_B_PIN))
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Right_Value++;
-                    }
-                    else // 如果此时B相是低电平
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Right_Value--;
-                    }
-                }
-               else // 读取A相引脚当前的电平 (低电平/假)
-                {
-                    // 如果此时B相是高电平
-                    if(DL_GPIO_readPins(encoder_right_B_PORT, encoder_right_B_PIN))
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Right_Value--;
-                    }
-                    else // 如果此时B相是低电平
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Right_Value++;
-                    }
-                }
-                // 处理完A相的中断了，必须清除这个中断标志，否则程序会一直卡在中断里
-                DL_GPIO_clearInterruptStatus(encoder_right_A_PORT,encoder_right_A_PIN);
-            }
+        case DL_TIMER_IIDX_ZERO://如果是0溢出中断
+            //将LED灯的状态翻转
+            if( consthh%10 == 0)
+                DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
+            consthh++;
+            i++;
+            left_encoder_value = Get_Encoder_Left();
+            right_encoder_value = Get_Encoder_Right();
+            break;
 
-            // 判断是不是右轮的 B 相引脚触发了中断
-            if(gpio_interrupt_status & encoder_right_B_PIN)
-            {
-                // 读取B相引脚当前的电平 (高电平/真)
-                if(DL_GPIO_readPins(encoder_right_B_PORT, encoder_right_B_PIN))
-                {
-                    // 如果此时A相也是高电平
-                    if(DL_GPIO_readPins(encoder_right_A_PORT, encoder_right_A_PIN))
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Right_Value--;
-                    }
-                    else // 如果此时A相是低电平
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Right_Value++;
-                    }
-                }
-               else // 读取B相引脚当前的电平 (低电平/假)
-                {
-                    // 如果此时A相是高电平
-                    if(DL_GPIO_readPins(encoder_right_A_PORT, encoder_right_A_PIN))
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Right_Value++;
-                    }
-                    else // 如果此时A相是低电平
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Right_Value--;
-                    }
-                }
-                // 处理完B相的中断了，同样要清除中断标志
-                DL_GPIO_clearInterruptStatus(encoder_right_B_PORT, encoder_right_B_PIN);
-            }
-        }
-        break;
-
-        // Case 2: 如果是 GPIOB 端口触发了中断 (左轮编码器接在GPIOB)
-        case DL_INTERRUPT_GROUP1_IIDX_GPIOB:
-        {
-            // 读取GPIOB端口上，哪些引脚的中断被触发了。
-            // 我们只关心左轮编码器的A相和B相引脚。
-            uint32_t gpio_interrupt_status = DL_GPIO_getEnabledInterruptStatus(GPIOB, encoder_left_A_PIN | encoder_left_B_PIN);
-
-            // 判断是不是左轮的 A 相引脚触发了中断
-             if(gpio_interrupt_status & encoder_left_A_PIN)
-            {
-                // 读取A相引脚当前的电平 (高电平/真)
-                if(DL_GPIO_readPins(encoder_left_A_PORT, encoder_left_A_PIN))
-                {
-                    // 如果此时B相也是高电平
-                    if(DL_GPIO_readPins(encoder_left_B_PORT, encoder_left_B_PIN))
-                    {
-                        // 判定为反转，计数值减1 (这里的正反转定义可能和右轮相反，取决于电机安装方向)
-                        Encoder_Left_Value--;
-                    }
-                    else // 如果此时B相是低电平
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Left_Value++;
-                    }
-                }
-            else // 读取A相引脚当前的电平 (低电平/假)
-                {
-                    // 如果此时B相是高电平
-                    if(DL_GPIO_readPins(encoder_left_B_PORT, encoder_left_B_PIN))
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Left_Value++;
-                    }
-                    else // 如果此时B相是低电平
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Left_Value--;
-                    }
-                }
-                // 处理完A相的中断了，必须清除这个中断标志
-                DL_GPIO_clearInterruptStatus(encoder_left_A_PORT,encoder_left_A_PIN);
-            }
-
-            // 判断是不是左轮的 B 相引脚触发了中断
-            if(gpio_interrupt_status & encoder_left_B_PIN)
-            {
-                // 读取B相引脚当前的电平 (高电平/真)
-                if(DL_GPIO_readPins(encoder_left_B_PORT, encoder_left_B_PIN))
-                {
-                    // 如果此时A相也是高电平
-                    if(DL_GPIO_readPins(encoder_left_A_PORT, encoder_left_A_PIN))
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Left_Value++;
-                    }
-                    else // 如果此时A相是低电平
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Left_Value--;
-                    }
-                }
-            else // 读取B相引脚当前的电平 (低电平/假)
-                {
-                    // 如果此时A相是高电平
-                    if(DL_GPIO_readPins(encoder_left_A_PORT, encoder_left_A_PIN))
-                    {
-                        // 判定为反转，计数值减1
-                        Encoder_Left_Value--;
-                    }
-                    else // 如果此时A相是低电平
-                    {
-                        // 判定为正转，计数值加1
-                        Encoder_Left_Value++;
-                    }
-                }
-                // 处理完B相的中断了，同样要清除中断标志
-                DL_GPIO_clearInterruptStatus(encoder_left_B_PORT,encoder_left_B_PIN);
-            }
-        }
-        break;
-
+        default://其他的定时器中断
+            break;
     }
 }

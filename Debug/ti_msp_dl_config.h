@@ -78,6 +78,28 @@ extern "C" {
 
 
 
+/* Defines for PWM_serov */
+#define PWM_serov_INST                                                     TIMA0
+#define PWM_serov_INST_IRQHandler                               TIMA0_IRQHandler
+#define PWM_serov_INST_INT_IRQN                                 (TIMA0_INT_IRQn)
+#define PWM_serov_INST_CLK_FREQ                                         32000000
+/* GPIO defines for channel 0 */
+#define GPIO_PWM_serov_C0_PORT                                             GPIOA
+#define GPIO_PWM_serov_C0_PIN                                     DL_GPIO_PIN_21
+#define GPIO_PWM_serov_C0_IOMUX                                  (IOMUX_PINCM46)
+#define GPIO_PWM_serov_C0_IOMUX_FUNC                 IOMUX_PINCM46_PF_TIMA0_CCP0
+#define GPIO_PWM_serov_C0_IDX                                DL_TIMER_CC_0_INDEX
+
+
+
+/* Defines for TIMER_0 */
+#define TIMER_0_INST                                                     (TIMG0)
+#define TIMER_0_INST_IRQHandler                                 TIMG0_IRQHandler
+#define TIMER_0_INST_INT_IRQN                                   (TIMG0_INT_IRQn)
+#define TIMER_0_INST_LOAD_VALUE                                           (399U)
+
+
+
 
 /* Defines for I2C_MPU6050 */
 #define I2C_MPU6050_INST                                                    I2C0
@@ -119,22 +141,27 @@ extern "C" {
 #define GPIO_MPU6050_PORT                                                (GPIOB)
 
 /* Defines for PIN_INT: GPIOB.13 with pinCMx 30 on package pin 1 */
-// groups represented: ["encoder","GPIO_MPU6050"]
-// pins affected: ["left_A","left_B","PIN_INT"]
-#define GPIO_MULTIPLE_GPIOB_INT_IRQN                            (GPIOB_INT_IRQn)
-#define GPIO_MULTIPLE_GPIOB_INT_IIDX            (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
+// pins affected by this interrupt request:["PIN_INT"]
+#define GPIO_MPU6050_INT_IRQN                                   (GPIOB_INT_IRQn)
+#define GPIO_MPU6050_INT_IIDX                   (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
 #define GPIO_MPU6050_PIN_INT_IIDX                           (DL_GPIO_IIDX_DIO13)
 #define GPIO_MPU6050_PIN_INT_PIN                                (DL_GPIO_PIN_13)
 #define GPIO_MPU6050_PIN_INT_IOMUX                               (IOMUX_PINCM30)
-/* Port definition for Pin Group GPIO_OLED */
-#define GPIO_OLED_PORT                                                   (GPIOA)
+/* Port definition for Pin Group LED */
+#define LED_PORT                                                         (GPIOB)
 
-/* Defines for PIN_SCL: GPIOA.25 with pinCMx 55 on package pin 26 */
-#define GPIO_OLED_PIN_SCL_PIN                                   (DL_GPIO_PIN_25)
-#define GPIO_OLED_PIN_SCL_IOMUX                                  (IOMUX_PINCM55)
-/* Defines for PIN_SDA: GPIOA.27 with pinCMx 60 on package pin 31 */
-#define GPIO_OLED_PIN_SDA_PIN                                   (DL_GPIO_PIN_27)
-#define GPIO_OLED_PIN_SDA_IOMUX                                  (IOMUX_PINCM60)
+/* Defines for PIN_22: GPIOB.22 with pinCMx 50 on package pin 21 */
+#define LED_PIN_22_PIN                                          (DL_GPIO_PIN_22)
+#define LED_PIN_22_IOMUX                                         (IOMUX_PINCM50)
+/* Port definition for Pin Group OLED */
+#define OLED_PORT                                                        (GPIOB)
+
+/* Defines for SCL: GPIOB.9 with pinCMx 26 on package pin 61 */
+#define OLED_SCL_PIN                                             (DL_GPIO_PIN_9)
+#define OLED_SCL_IOMUX                                           (IOMUX_PINCM26)
+/* Defines for SDA: GPIOB.8 with pinCMx 25 on package pin 60 */
+#define OLED_SDA_PIN                                             (DL_GPIO_PIN_8)
+#define OLED_SDA_IOMUX                                           (IOMUX_PINCM25)
 /* Defines for AIN1: GPIOA.8 with pinCMx 19 on package pin 54 */
 #define Control_AIN1_PORT                                                (GPIOA)
 #define Control_AIN1_PIN                                         (DL_GPIO_PIN_8)
@@ -151,26 +178,25 @@ extern "C" {
 #define Control_BIN2_PORT                                                (GPIOB)
 #define Control_BIN2_PIN                                        (DL_GPIO_PIN_15)
 #define Control_BIN2_IOMUX                                       (IOMUX_PINCM32)
-/* Defines for left_A: GPIOB.4 with pinCMx 17 on package pin 52 */
-#define encoder_left_A_PORT                                              (GPIOB)
-#define encoder_left_A_IIDX                                  (DL_GPIO_IIDX_DIO4)
-#define encoder_left_A_PIN                                       (DL_GPIO_PIN_4)
-#define encoder_left_A_IOMUX                                     (IOMUX_PINCM17)
-/* Defines for left_B: GPIOB.5 with pinCMx 18 on package pin 53 */
-#define encoder_left_B_PORT                                              (GPIOB)
-#define encoder_left_B_IIDX                                  (DL_GPIO_IIDX_DIO5)
-#define encoder_left_B_PIN                                       (DL_GPIO_PIN_5)
-#define encoder_left_B_IOMUX                                     (IOMUX_PINCM18)
+/* Port definition for Pin Group encoder */
+#define encoder_PORT                                                     (GPIOA)
+
+/* Defines for left_A: GPIOA.15 with pinCMx 37 on package pin 8 */
+// pins affected by this interrupt request:["left_A","left_B","right_A","right_B"]
+#define encoder_INT_IRQN                                        (GPIOA_INT_IRQn)
+#define encoder_INT_IIDX                        (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
+#define encoder_left_A_IIDX                                 (DL_GPIO_IIDX_DIO15)
+#define encoder_left_A_PIN                                      (DL_GPIO_PIN_15)
+#define encoder_left_A_IOMUX                                     (IOMUX_PINCM37)
+/* Defines for left_B: GPIOA.16 with pinCMx 38 on package pin 9 */
+#define encoder_left_B_IIDX                                 (DL_GPIO_IIDX_DIO16)
+#define encoder_left_B_PIN                                      (DL_GPIO_PIN_16)
+#define encoder_left_B_IOMUX                                     (IOMUX_PINCM38)
 /* Defines for right_A: GPIOA.10 with pinCMx 21 on package pin 56 */
-#define encoder_right_A_PORT                                             (GPIOA)
-// pins affected by this interrupt request:["right_A","right_B"]
-#define encoder_GPIOA_INT_IRQN                                  (GPIOA_INT_IRQn)
-#define encoder_GPIOA_INT_IIDX                  (DL_INTERRUPT_GROUP1_IIDX_GPIOA)
 #define encoder_right_A_IIDX                                (DL_GPIO_IIDX_DIO10)
 #define encoder_right_A_PIN                                     (DL_GPIO_PIN_10)
 #define encoder_right_A_IOMUX                                    (IOMUX_PINCM21)
 /* Defines for right_B: GPIOA.11 with pinCMx 22 on package pin 57 */
-#define encoder_right_B_PORT                                             (GPIOA)
 #define encoder_right_B_IIDX                                (DL_GPIO_IIDX_DIO11)
 #define encoder_right_B_PIN                                     (DL_GPIO_PIN_11)
 #define encoder_right_B_IOMUX                                    (IOMUX_PINCM22)
@@ -183,6 +209,8 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
+void SYSCFG_DL_PWM_serov_init(void);
+void SYSCFG_DL_TIMER_0_init(void);
 void SYSCFG_DL_I2C_MPU6050_init(void);
 void SYSCFG_DL_UART_0_init(void);
 

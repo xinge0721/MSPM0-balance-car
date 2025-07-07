@@ -1,7 +1,8 @@
 #ifndef __HTS221_H
 #define __HTS221_H
 
-#include "../../sys.h"
+#include "../../system/sys/sys.h"
+
 
 void HTS221_Init(void);
 void HTS221_turn(uint16_t angle, uint16_t speed, uint8_t ID);
