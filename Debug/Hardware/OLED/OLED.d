@@ -75,7 +75,7 @@ Hardware/OLED/OLED.o: ../Hardware/OLED/OLED.c ../Hardware/OLED/OLED.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h \
- ../Hardware/OLED/OLED_Font.h
+ ../system/sys/sys.h ../Hardware/OLED/OLED_Font.h
 ../Hardware/OLED/OLED.h:
 ti_msp_dl_config.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/devices/msp/msp.h:
@@ -151,4 +151,5 @@ C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_vref.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h:
+../system/sys/sys.h:
 ../Hardware/OLED/OLED_Font.h:

@@ -126,6 +126,7 @@ GEN_OPTS__QUOTED :=
 SUBDIRS := \
 . \
 Hardware/APP \
+Hardware/Control \
 Hardware/Encoder \
 Hardware/HTS221 \
 Hardware/MPU6050 \

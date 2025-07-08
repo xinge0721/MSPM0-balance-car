@@ -1,11 +1,13 @@
 #ifndef __OLED_H
 #define __OLED_H
 #include "ti_msp_dl_config.h"
-
+#include "../../system/sys/sys.h"
 
 // 全局GPIO配置变量
 extern GPIO_Regs* OLED_SCL_PORT;
 extern GPIO_Regs* OLED_SDA_PORT;
+
+
 extern uint32_t _OLED_SCL_PIN;
 extern uint32_t _OLED_SDA_PIN;
 

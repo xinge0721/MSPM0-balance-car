@@ -4,7 +4,9 @@
 #include "ti_msp_dl_config.h"
 #include "system/sys/sys.h"
 
-
+extern volatile int Encoder_Left_Value ;
+extern volatile int Encoder_Right_Value ;
+extern volatile int Encoder_i_Value ;
 
 
 

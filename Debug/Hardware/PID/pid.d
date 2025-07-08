@@ -75,7 +75,9 @@ Hardware/PID/pid.o: ../Hardware/PID/pid.c ../Hardware/PID/pid.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_vref.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h \
- C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h
+ C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h \
+ ../Hardware/Control/Control.h \
+ ../system/sys/sys.h
 ../Hardware/PID/pid.h:
 ../system/sys/sys.h:
 ti_msp_dl_config.h:
@@ -152,3 +154,5 @@ C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_vref.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h:
+../Hardware/Control/Control.h:
+../system/sys/sys.h:

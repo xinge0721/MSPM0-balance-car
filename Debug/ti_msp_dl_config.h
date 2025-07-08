@@ -78,17 +78,23 @@ extern "C" {
 
 
 
-/* Defines for PWM_serov */
-#define PWM_serov_INST                                                     TIMA0
-#define PWM_serov_INST_IRQHandler                               TIMA0_IRQHandler
-#define PWM_serov_INST_INT_IRQN                                 (TIMA0_INT_IRQn)
-#define PWM_serov_INST_CLK_FREQ                                         32000000
+/* Defines for PWM */
+#define PWM_INST                                                           TIMA1
+#define PWM_INST_IRQHandler                                     TIMA1_IRQHandler
+#define PWM_INST_INT_IRQN                                       (TIMA1_INT_IRQn)
+#define PWM_INST_CLK_FREQ                                               32000000
 /* GPIO defines for channel 0 */
-#define GPIO_PWM_serov_C0_PORT                                             GPIOA
-#define GPIO_PWM_serov_C0_PIN                                     DL_GPIO_PIN_21
-#define GPIO_PWM_serov_C0_IOMUX                                  (IOMUX_PINCM46)
-#define GPIO_PWM_serov_C0_IOMUX_FUNC                 IOMUX_PINCM46_PF_TIMA0_CCP0
-#define GPIO_PWM_serov_C0_IDX                                DL_TIMER_CC_0_INDEX
+#define GPIO_PWM_C0_PORT                                                   GPIOB
+#define GPIO_PWM_C0_PIN                                            DL_GPIO_PIN_0
+#define GPIO_PWM_C0_IOMUX                                        (IOMUX_PINCM12)
+#define GPIO_PWM_C0_IOMUX_FUNC                       IOMUX_PINCM12_PF_TIMA1_CCP0
+#define GPIO_PWM_C0_IDX                                      DL_TIMER_CC_0_INDEX
+/* GPIO defines for channel 1 */
+#define GPIO_PWM_C1_PORT                                                   GPIOB
+#define GPIO_PWM_C1_PIN                                            DL_GPIO_PIN_1
+#define GPIO_PWM_C1_IOMUX                                        (IOMUX_PINCM13)
+#define GPIO_PWM_C1_IOMUX_FUNC                       IOMUX_PINCM13_PF_TIMA1_CCP1
+#define GPIO_PWM_C1_IDX                                      DL_TIMER_CC_1_INDEX
 
 
 
@@ -162,22 +168,22 @@ extern "C" {
 /* Defines for SDA: GPIOB.8 with pinCMx 25 on package pin 60 */
 #define OLED_SDA_PIN                                             (DL_GPIO_PIN_8)
 #define OLED_SDA_IOMUX                                           (IOMUX_PINCM25)
-/* Defines for AIN1: GPIOA.8 with pinCMx 19 on package pin 54 */
+/* Defines for AIN1: GPIOA.2 with pinCMx 7 on package pin 42 */
 #define Control_AIN1_PORT                                                (GPIOA)
-#define Control_AIN1_PIN                                         (DL_GPIO_PIN_8)
-#define Control_AIN1_IOMUX                                       (IOMUX_PINCM19)
+#define Control_AIN1_PIN                                         (DL_GPIO_PIN_2)
+#define Control_AIN1_IOMUX                                        (IOMUX_PINCM7)
 /* Defines for AIN2: GPIOA.7 with pinCMx 14 on package pin 49 */
 #define Control_AIN2_PORT                                                (GPIOA)
 #define Control_AIN2_PIN                                         (DL_GPIO_PIN_7)
 #define Control_AIN2_IOMUX                                       (IOMUX_PINCM14)
-/* Defines for BIN1: GPIOB.14 with pinCMx 31 on package pin 2 */
+/* Defines for BIN1: GPIOB.10 with pinCMx 27 on package pin 62 */
 #define Control_BIN1_PORT                                                (GPIOB)
-#define Control_BIN1_PIN                                        (DL_GPIO_PIN_14)
-#define Control_BIN1_IOMUX                                       (IOMUX_PINCM31)
-/* Defines for BIN2: GPIOB.15 with pinCMx 32 on package pin 3 */
+#define Control_BIN1_PIN                                        (DL_GPIO_PIN_10)
+#define Control_BIN1_IOMUX                                       (IOMUX_PINCM27)
+/* Defines for BIN2: GPIOB.11 with pinCMx 28 on package pin 63 */
 #define Control_BIN2_PORT                                                (GPIOB)
-#define Control_BIN2_PIN                                        (DL_GPIO_PIN_15)
-#define Control_BIN2_IOMUX                                       (IOMUX_PINCM32)
+#define Control_BIN2_PIN                                        (DL_GPIO_PIN_11)
+#define Control_BIN2_IOMUX                                       (IOMUX_PINCM28)
 /* Port definition for Pin Group encoder */
 #define encoder_PORT                                                     (GPIOA)
 
@@ -192,14 +198,14 @@ extern "C" {
 #define encoder_left_B_IIDX                                 (DL_GPIO_IIDX_DIO16)
 #define encoder_left_B_PIN                                      (DL_GPIO_PIN_16)
 #define encoder_left_B_IOMUX                                     (IOMUX_PINCM38)
-/* Defines for right_A: GPIOA.10 with pinCMx 21 on package pin 56 */
-#define encoder_right_A_IIDX                                (DL_GPIO_IIDX_DIO10)
-#define encoder_right_A_PIN                                     (DL_GPIO_PIN_10)
-#define encoder_right_A_IOMUX                                    (IOMUX_PINCM21)
-/* Defines for right_B: GPIOA.11 with pinCMx 22 on package pin 57 */
-#define encoder_right_B_IIDX                                (DL_GPIO_IIDX_DIO11)
-#define encoder_right_B_PIN                                     (DL_GPIO_PIN_11)
-#define encoder_right_B_IOMUX                                    (IOMUX_PINCM22)
+/* Defines for right_A: GPIOA.17 with pinCMx 39 on package pin 10 */
+#define encoder_right_A_IIDX                                (DL_GPIO_IIDX_DIO17)
+#define encoder_right_A_PIN                                     (DL_GPIO_PIN_17)
+#define encoder_right_A_IOMUX                                    (IOMUX_PINCM39)
+/* Defines for right_B: GPIOA.22 with pinCMx 47 on package pin 18 */
+#define encoder_right_B_IIDX                                (DL_GPIO_IIDX_DIO22)
+#define encoder_right_B_PIN                                     (DL_GPIO_PIN_22)
+#define encoder_right_B_IOMUX                                    (IOMUX_PINCM47)
 
 
 
@@ -209,7 +215,7 @@ void SYSCFG_DL_init(void);
 void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
-void SYSCFG_DL_PWM_serov_init(void);
+void SYSCFG_DL_PWM_init(void);
 void SYSCFG_DL_TIMER_0_init(void);
 void SYSCFG_DL_I2C_MPU6050_init(void);
 void SYSCFG_DL_UART_0_init(void);
