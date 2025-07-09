@@ -13,6 +13,8 @@
 "./Hardware/OLED/OLED.o"
 "./Hardware/PID/pid.o"
 "./Hardware/Serial/Serial.o"
+"./Hardware/WIT/interrupt.o"
+"./Hardware/WIT/wit.o"
 "./system/delay/delay.o"
 "./system/sys/sys.o"
 -l"./device_linker.cmd"

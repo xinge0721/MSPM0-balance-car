@@ -45,6 +45,7 @@
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/Seial"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/MPU6050"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/Control"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Hardware/wit"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/HTS221"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE.328402769" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE" valueType="definedSymbols">

@@ -1,5 +1,7 @@
 #include "pid.h"
 #include "../Control/Control.h"
+#include "wit.h"
+
 float zangle =0;
 
 // 简化版PID
@@ -33,16 +35,16 @@ int FeedbackControl(pid *pid,int TargetVelocity, int CurrentVelocity)
 																		//pid->kp*(Bias-pid->last_err) 作用为限制加速度
 																		//pid->ki*Bias             速度控制值由Bias不断积分得到 偏差越大加速度越大
 		pid->last_err = Bias;	
-//		pid->ControlVelocity=pwm_control(pid->ControlVelocity);//限幅
+		pid->ControlVelocity = (pid->ControlVelocity > pid->MAX) ? pid->MAX : ((pid->ControlVelocity < -pid->MIN) ? -pid->MIN : pid->ControlVelocity);//限幅
 
 		// 使用三目运算符直接限制并返回PWM值
-		return (pid->ControlVelocity > pid->MAX) ? pid->MAX : ((pid->ControlVelocity < -pid->MIN) ? -pid->MIN : pid->ControlVelocity); //返回速度控制值
+		return pid->ControlVelocity; //返回速度控制值
 }
 
 void mithon_run(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float i, float speed)
 {
 	// 计算当前角度与目标角度的差值，计算转向修正值
-	int ADD = Turn_Pid(pid_turn_right, zangle, i);   // 当前角度与目标角度
+	int ADD = Turn_Pid(pid_turn_right, wit_data.yaw, i);   // 当前角度与目标角度
 	
 	// 左轮速度 = 基准速度 - 修正值
 	int Lpwm = FeedbackControl(pid_speed_left, speed - ADD, pid_speed_left->now_speed);

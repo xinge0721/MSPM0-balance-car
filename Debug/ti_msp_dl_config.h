@@ -122,6 +122,18 @@ extern "C" {
 #define GPIO_I2C_MPU6050_IOMUX_SCL_FUNC                 IOMUX_PINCM6_PF_I2C0_SCL
 
 
+/* Defines for UART_WIT */
+#define UART_WIT_INST                                                      UART2
+#define UART_WIT_INST_FREQUENCY                                         32000000
+#define UART_WIT_INST_IRQHandler                                UART2_IRQHandler
+#define UART_WIT_INST_INT_IRQN                                    UART2_INT_IRQn
+#define GPIO_UART_WIT_RX_PORT                                              GPIOB
+#define GPIO_UART_WIT_RX_PIN                                      DL_GPIO_PIN_16
+#define GPIO_UART_WIT_IOMUX_RX                                   (IOMUX_PINCM33)
+#define GPIO_UART_WIT_IOMUX_RX_FUNC                    IOMUX_PINCM33_PF_UART2_RX
+#define UART_WIT_BAUD_RATE                                                (9600)
+#define UART_WIT_IBRD_32_MHZ_9600_BAUD                                     (208)
+#define UART_WIT_FBRD_32_MHZ_9600_BAUD                                      (21)
 /* Defines for UART_0 */
 #define UART_0_INST                                                        UART0
 #define UART_0_INST_FREQUENCY                                           32000000
@@ -135,12 +147,17 @@ extern "C" {
 #define GPIO_UART_0_IOMUX_TX                                      (IOMUX_PINCM1)
 #define GPIO_UART_0_IOMUX_RX_FUNC                       IOMUX_PINCM2_PF_UART0_RX
 #define GPIO_UART_0_IOMUX_TX_FUNC                       IOMUX_PINCM1_PF_UART0_TX
-#define UART_0_BAUD_RATE                                                  (9600)
-#define UART_0_IBRD_32_MHZ_9600_BAUD                                       (208)
-#define UART_0_FBRD_32_MHZ_9600_BAUD                                        (21)
+#define UART_0_BAUD_RATE                                                (115200)
+#define UART_0_IBRD_32_MHZ_115200_BAUD                                      (17)
+#define UART_0_FBRD_32_MHZ_115200_BAUD                                      (23)
 
 
 
+
+
+/* Defines for DMA_WIT */
+#define DMA_WIT_CHAN_ID                                                      (0)
+#define UART_WIT_INST_DMA_TRIGGER                            (DMA_UART2_RX_TRIG)
 
 
 /* Port definition for Pin Group GPIO_MPU6050 */
@@ -218,7 +235,9 @@ void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_PWM_init(void);
 void SYSCFG_DL_TIMER_0_init(void);
 void SYSCFG_DL_I2C_MPU6050_init(void);
+void SYSCFG_DL_UART_WIT_init(void);
 void SYSCFG_DL_UART_0_init(void);
+void SYSCFG_DL_DMA_init(void);
 
 void SYSCFG_DL_SYSTICK_init(void);
 

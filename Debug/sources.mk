@@ -133,6 +133,7 @@ Hardware/MPU6050 \
 Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
+Hardware/WIT \
 system/delay \
 system/sys \
 

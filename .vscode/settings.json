@@ -4,6 +4,7 @@
         "cstdint": "cpp",
         "oled.h": "c",
         "ti_msp_dl_config.h": "c",
-        "encoder.h": "c"
+        "encoder.h": "c",
+        "delay.h": "c"
     }
 }

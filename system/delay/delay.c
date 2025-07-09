@@ -20,11 +20,3 @@ void delay_s(unsigned int s)
         while( delay_times != 0 );
 }
 
-// 滴答定时器中断服务函数
-void SysTick_Handler(void)
-{
-    if( delay_times != 0 )
-    {
-        delay_times--;
-    }
-}

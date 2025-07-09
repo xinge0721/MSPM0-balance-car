@@ -213,6 +213,49 @@ void OLED_ShowSignedNum(uint8_t Line, uint8_t Column, int32_t Number, uint8_t Le
 }
 
 /**
+  * @brief  OLED显示浮点数（十进制，带符号数）
+  * @param  Line 起始行位置，范围：1~4
+  * @param  Column 起始列位置，范围：1~16
+  * @param  Number 要显示的浮点数
+  * @param  IntLength 整数部分长度
+  * @retval 无
+  */
+void OLED_ShowFloatNum(uint8_t Line, uint8_t Column, float Number, uint8_t IntLength)
+{
+	uint32_t integerPart, fractionalPart;
+	uint8_t i;
+	
+	if (Number >= 0)
+	{
+		OLED_ShowChar(Line, Column, '+');
+	}
+	else
+	{
+		OLED_ShowChar(Line, Column, '-');
+		Number = -Number;
+	}
+	
+	integerPart = (uint32_t)Number;
+	fractionalPart = (uint32_t)(((Number - integerPart) * 100) + 0.5);
+	
+	if (fractionalPart >= 100)
+	{
+		integerPart++;
+		fractionalPart -= 100;
+	}
+	
+	for (i = 0; i < IntLength; i++)
+	{
+		OLED_ShowChar(Line, Column + 1 + i, integerPart / OLED_Pow(10, IntLength - 1 - i) % 10 + '0');
+	}
+	
+	OLED_ShowChar(Line, Column + 1 + IntLength, '.');
+	
+	OLED_ShowChar(Line, Column + 2 + IntLength, fractionalPart / 10 + '0');
+	OLED_ShowChar(Line, Column + 3 + IntLength, fractionalPart % 10 + '0');
+}
+
+/**
   * @brief  OLED显示数字（十六进制，正数）
   * @param  Line 起始行位置，范围：1~4
   * @param  Column 起始列位置，范围：1~16

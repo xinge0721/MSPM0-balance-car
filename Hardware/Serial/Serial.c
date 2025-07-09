@@ -1,4 +1,5 @@
 #include "Serial.h"
+#include "ti_msp_dl_config.h"
 #include <stdarg.h>
 #include <stdio.h>
 

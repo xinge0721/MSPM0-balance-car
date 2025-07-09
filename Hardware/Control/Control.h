@@ -5,5 +5,6 @@
 void Control_forward(void);
 void Control_back(void);
 void Control_stop(void);
+void Control_speed(int left_speed,int right_speed);
 
 #endif
