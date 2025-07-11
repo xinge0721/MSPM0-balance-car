@@ -20,3 +20,5 @@ void delay_s(unsigned int s)
         while( delay_times != 0 );
 }
 
+
+void delay_1us(int __us) { delay_cycles( (CPUCLK_FREQ / 1000 / 1000)*__us); }

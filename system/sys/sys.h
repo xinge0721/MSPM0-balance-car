@@ -1,7 +1,15 @@
 #ifndef __SYS_H
 #define __SYS_H
 #include "ti_msp_dl_config.h"
-
+#include "system/delay/delay.h"
+#include "Hardware/Encoder/Encoder.h"
+#include "Hardware/OLED/OLED.h"
+#include "Hardware/Serial/Serial.h"
+#include "Hardware/PID/pid.h"
+#include "Hardware/Control/Control.h"
+#include "Hardware/APP/APP.h"   
+#include "wit.h"
+#include "Hardware/HCSR04/HCSR04.h"
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */
 typedef signed   char  int8_t;     /* 有符号8位整型 */
@@ -28,5 +36,8 @@ typedef volatile unsigned int   vu32; /* 易变无符号32位整型 */
 
 void system_init(void);
 
-
+// 左编码器值
+extern float left_encoder_value;
+// 右编码器值
+extern float right_encoder_value;
 #endif /* __SYS_H */ 

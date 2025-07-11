@@ -8,4 +8,5 @@ extern volatile unsigned long tick_ms;
 
 void delay_ms(unsigned int ms);
 void delay_s(unsigned int s);
+void delay_1us(int __us);
 #endif

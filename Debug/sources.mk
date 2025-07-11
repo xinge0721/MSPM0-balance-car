@@ -128,6 +128,7 @@ SUBDIRS := \
 Hardware/APP \
 Hardware/Control \
 Hardware/Encoder \
+Hardware/HCSR04 \
 Hardware/HTS221 \
 Hardware/MPU6050 \
 Hardware/OLED \

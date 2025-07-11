@@ -102,7 +102,7 @@ extern "C" {
 #define TIMER_0_INST                                                     (TIMG0)
 #define TIMER_0_INST_IRQHandler                                 TIMG0_IRQHandler
 #define TIMER_0_INST_INT_IRQN                                   (TIMG0_INT_IRQn)
-#define TIMER_0_INST_LOAD_VALUE                                           (399U)
+#define TIMER_0_INST_LOAD_VALUE                                           (799U)
 
 
 
@@ -164,9 +164,10 @@ extern "C" {
 #define GPIO_MPU6050_PORT                                                (GPIOB)
 
 /* Defines for PIN_INT: GPIOB.13 with pinCMx 30 on package pin 1 */
-// pins affected by this interrupt request:["PIN_INT"]
-#define GPIO_MPU6050_INT_IRQN                                   (GPIOB_INT_IRQn)
-#define GPIO_MPU6050_INT_IIDX                   (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
+// groups represented: ["SR04","GPIO_MPU6050"]
+// pins affected: ["Echo","PIN_INT"]
+#define GPIO_MULTIPLE_GPIOB_INT_IRQN                            (GPIOB_INT_IRQn)
+#define GPIO_MULTIPLE_GPIOB_INT_IIDX            (DL_INTERRUPT_GROUP1_IIDX_GPIOB)
 #define GPIO_MPU6050_PIN_INT_IIDX                           (DL_GPIO_IIDX_DIO13)
 #define GPIO_MPU6050_PIN_INT_PIN                                (DL_GPIO_PIN_13)
 #define GPIO_MPU6050_PIN_INT_IOMUX                               (IOMUX_PINCM30)
@@ -223,6 +224,25 @@ extern "C" {
 #define encoder_right_B_IIDX                                (DL_GPIO_IIDX_DIO22)
 #define encoder_right_B_PIN                                     (DL_GPIO_PIN_22)
 #define encoder_right_B_IOMUX                                    (IOMUX_PINCM47)
+/* Port definition for Pin Group HCSR04 */
+#define HCSR04_PORT                                                      (GPIOB)
+
+/* Defines for TRIG: GPIOB.14 with pinCMx 31 on package pin 2 */
+#define HCSR04_TRIG_PIN                                         (DL_GPIO_PIN_14)
+#define HCSR04_TRIG_IOMUX                                        (IOMUX_PINCM31)
+/* Defines for ECHO: GPIOB.15 with pinCMx 32 on package pin 3 */
+#define HCSR04_ECHO_PIN                                         (DL_GPIO_PIN_15)
+#define HCSR04_ECHO_IOMUX                                        (IOMUX_PINCM32)
+/* Port definition for Pin Group SR04 */
+#define SR04_PORT                                                        (GPIOB)
+
+/* Defines for Trig: GPIOB.4 with pinCMx 17 on package pin 52 */
+#define SR04_Trig_PIN                                            (DL_GPIO_PIN_4)
+#define SR04_Trig_IOMUX                                          (IOMUX_PINCM17)
+/* Defines for Echo: GPIOB.5 with pinCMx 18 on package pin 53 */
+#define SR04_Echo_IIDX                                       (DL_GPIO_IIDX_DIO5)
+#define SR04_Echo_PIN                                            (DL_GPIO_PIN_5)
+#define SR04_Echo_IOMUX                                          (IOMUX_PINCM18)
 
 
 

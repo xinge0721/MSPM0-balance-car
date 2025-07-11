@@ -174,6 +174,16 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_UP,
 		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
 
+    DL_GPIO_initDigitalOutput(HCSR04_TRIG_IOMUX);
+
+    DL_GPIO_initDigitalOutput(HCSR04_ECHO_IOMUX);
+
+    DL_GPIO_initDigitalOutput(SR04_Trig_IOMUX);
+
+    DL_GPIO_initDigitalInputFeatures(SR04_Echo_IOMUX,
+		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_NONE,
+		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
+
     DL_GPIO_setPins(GPIOA, Control_AIN1_PIN |
 		Control_AIN2_PIN);
     DL_GPIO_enableOutput(GPIOA, Control_AIN1_PIN |
@@ -194,15 +204,24 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		OLED_SCL_PIN |
 		OLED_SDA_PIN |
 		Control_BIN1_PIN |
-		Control_BIN2_PIN);
+		Control_BIN2_PIN |
+		HCSR04_TRIG_PIN |
+		HCSR04_ECHO_PIN);
+    DL_GPIO_setPins(GPIOB, SR04_Trig_PIN);
     DL_GPIO_enableOutput(GPIOB, LED_PIN_22_PIN |
 		OLED_SCL_PIN |
 		OLED_SDA_PIN |
 		Control_BIN1_PIN |
-		Control_BIN2_PIN);
-    DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_13_EDGE_FALL);
-    DL_GPIO_clearInterruptStatus(GPIOB, GPIO_MPU6050_PIN_INT_PIN);
-    DL_GPIO_enableInterrupt(GPIOB, GPIO_MPU6050_PIN_INT_PIN);
+		Control_BIN2_PIN |
+		HCSR04_TRIG_PIN |
+		HCSR04_ECHO_PIN |
+		SR04_Trig_PIN);
+    DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_13_EDGE_FALL |
+		DL_GPIO_PIN_5_EDGE_RISE_FALL);
+    DL_GPIO_clearInterruptStatus(GPIOB, GPIO_MPU6050_PIN_INT_PIN |
+		SR04_Echo_PIN);
+    DL_GPIO_enableInterrupt(GPIOB, GPIO_MPU6050_PIN_INT_PIN |
+		SR04_Echo_PIN);
 
 }
 
@@ -280,19 +299,19 @@ SYSCONFIG_WEAK void SYSCFG_DL_PWM_init(void) {
 
 
 /*
- * Timer clock configuration to be sourced by BUSCLK /  (4000000 Hz)
+ * Timer clock configuration to be sourced by BUSCLK /  (8000000 Hz)
  * timerClkFreq = (timerClkSrc / (timerClkDivRatio * (timerClkPrescale + 1)))
- *   40000 Hz = 4000000 Hz / (8 * (99 + 1))
+ *   800000 Hz = 8000000 Hz / (4 * (9 + 1))
  */
 static const DL_TimerG_ClockConfig gTIMER_0ClockConfig = {
     .clockSel    = DL_TIMER_CLOCK_BUSCLK,
-    .divideRatio = DL_TIMER_CLOCK_DIVIDE_8,
-    .prescale    = 99U,
+    .divideRatio = DL_TIMER_CLOCK_DIVIDE_4,
+    .prescale    = 9U,
 };
 
 /*
  * Timer load value (where the counter starts from) is calculated as (timerPeriod * timerClockFreq) - 1
- * TIMER_0_INST_LOAD_VALUE = (10ms * 40000 Hz) - 1
+ * TIMER_0_INST_LOAD_VALUE = (1ms * 800000 Hz) - 1
  */
 static const DL_TimerG_TimerConfig gTIMER_0TimerConfig = {
     .period     = TIMER_0_INST_LOAD_VALUE,

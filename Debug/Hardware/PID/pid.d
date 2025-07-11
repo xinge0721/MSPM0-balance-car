@@ -76,9 +76,23 @@ Hardware/PID/pid.o: ../Hardware/PID/pid.c ../Hardware/PID/pid.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h \
  C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h \
- ../Hardware/Control/Control.h \
- ../system/sys/sys.h \
- C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/wit/wit.h
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/delay/delay.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/MPU6050/mspm0_clock.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/delay/delay.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Encoder/Encoder.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/OLED/OLED.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Serial/Serial.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/PID/pid.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Control/Control.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/APP/APP.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/wit/wit.h \
+ C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/HCSR04/HCSR04.h \
+ ../Hardware/Control/Control.h
 ../Hardware/PID/pid.h:
 ../system/sys/sys.h:
 ti_msp_dl_config.h:
@@ -155,6 +169,20 @@ C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_vref.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/dl_wwdt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_interrupt.h:
 C:/TI/mspm0_sdk_2_04_00_06/source/ti/driverlib/m0p/dl_systick.h:
-../Hardware/Control/Control.h:
-../system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/delay/delay.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/MPU6050/mspm0_clock.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/delay/delay.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Encoder/Encoder.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/OLED/OLED.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Serial/Serial.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/PID/pid.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/Control/Control.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/system/sys/sys.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/APP/APP.h:
 C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/wit/wit.h:
+C:/Users/xinge/workspace_ccstheia/MSPM0\ balance\ car/Hardware/HCSR04/HCSR04.h:
+../Hardware/Control/Control.h:
