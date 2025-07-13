@@ -17,6 +17,7 @@
 "./Hardware/WIT/interrupt.o"
 "./Hardware/WIT/wit.o"
 "./Hardware/line_follower/line_follower.o"
+"./Hardware/stepper/stepper.o"
 "./system/delay/delay.o"
 "./system/sys/sys.o"
 -l"./device_linker.cmd"

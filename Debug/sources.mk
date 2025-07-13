@@ -136,6 +136,7 @@ Hardware/PID \
 Hardware/Serial \
 Hardware/WIT \
 Hardware/line_follower \
+Hardware/stepper \
 system/delay \
 system/sys \
 
