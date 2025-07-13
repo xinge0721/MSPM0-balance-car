@@ -1,41 +1,142 @@
-## Example Summary
+# 【交接专用】四轮循迹模块测试平台超详细说明文档
 
-Empty C++ project using DriverLib.
-This example shows a basic empty project using DriverLib with just main C++ file
-and SysConfig initialization.
+## 1. 【重要】项目背景与现状
 
-## Peripherals & Pin Assignments
+**请务必先阅读本节！**
 
-| Peripheral | Pin | Function |
-| --- | --- | --- |
-| SYSCTL |  |  |
-| DEBUGSS | PA20 | Debug Clock |
-| DEBUGSS | PA19 | Debug Data In Out |
+各位接手的同事请注意，本项目的当前状态与代码仓库的名称 **严重不符**。
 
-## BoosterPacks, Board Resources & Jumper Settings
+-   **项目名称的历史遗留问题**：本项目最初是为一个 **两轮自平衡小车** 而创建的，因此仓库和工程名可能仍是 `balance car`。
+-   **当前实际功能**：由于原项目被砍，现在它已经被改造为一个 **用于模块功能验证的四轮循迹车**。
+-   **车体结构**：
+    *   **四轮结构**：前二轮为无动力的万向轮，后二轮为驱动轮。
+    *   **后轮驱动**：由两个电机提供动力。
+    *   **舵机转向**：依靠一个舵机（型号为HTS221）来改变前轮方向，实现转向。
+-   **核心任务**：当前项目的主要目标是作为 **硬件模块的测试平台**，例如测试循迹、避障、IMU数据读取等功能。所有的代码和硬件都是围绕这个新目标服务的。
 
-Visit [LP_MSPM0G3507](https://www.ti.com/tool/LP-MSPM0G3507) for LaunchPad information, including user guide and hardware files.
+---
 
-| Pin | Peripheral | Function | LaunchPad Pin | LaunchPad Settings |
-| --- | --- | --- | --- | --- |
-| PA20 | DEBUGSS | SWCLK | N/A | <ul><li>PA20 is used by SWD during debugging<br><ul><li>`J101 15:16 ON` Connect to XDS-110 SWCLK while debugging<br><li>`J101 15:16 OFF` Disconnect from XDS-110 SWCLK if using pin in application</ul></ul> |
-| PA19 | DEBUGSS | SWDIO | N/A | <ul><li>PA19 is used by SWD during debugging<br><ul><li>`J101 13:14 ON` Connect to XDS-110 SWDIO while debugging<br><li>`J101 13:14 OFF` Disconnect from XDS-110 SWDIO if using pin in application</ul></ul> |
+## 2. 环境搭建与运行
 
-### Device Migration Recommendations
-This project was developed for a superset device included in the LP_MSPM0G3507 LaunchPad. Please
-visit the [CCS User's Guide](https://software-dl.ti.com/msp430/esd/MSPM0-SDK/latest/docs/english/tools/ccs_ide_guide/doc_guide/doc_guide-srcs/ccs_ide_guide.html#sysconfig-project-migration)
-for information about migrating to other MSPM0 devices.
+本项目基于“立创·地猛星MSPM0G3507开发板”，所有环境搭建、编译、烧录的详细步骤，请 **严格参考** 以下官方中文文档站，其中包含了最权威、最详尽的图文教程：
 
-### Low-Power Recommendations
-TI recommends to terminate unused pins by setting the corresponding functions to
-GPIO and configure the pins to output low or input with internal
-pullup/pulldown resistor.
+➡️ **[https://wiki.lckfb.com/zh-hans/](https://wiki.lckfb.com/zh-hans/)**
 
-SysConfig allows developers to easily configure unused pins by selecting **Board**→**Configure Unused Pins**.
+请在该网站中查找与 **MSPM0G3507** 相关的教程。
 
-For more information about jumper configuration to achieve low-power using the
-MSPM0 LaunchPad, please visit the [LP-MSPM0G3507 User's Guide](https://www.ti.com/lit/slau873).
+---
 
-## Example Usage
+## 3. 【必读】平台特性与巨坑警告
 
-Compile, load and run the example.
+在开始看代码前，请务必了解这块单片机（MCU）的一些“个性”和局限性，能帮你省下大量调试时间。
+
+### 警告1：MCU性能孱弱，无法同时驱动4个电机！
+
+-   **现象**：这颗MCU的驱动能力非常有限。当尝试同时驱动4个电机时（例如，使用一个定时器的4个PWM通道），你会发现前3个电机工作正常，但 **第4个电机会变得异常缓慢，像是慢了半拍**。
+-   **结论**：这不是程序BUG，而是 **芯片的物理性能瓶颈**。在未来的开发中，请避免设计需要同时高速驱动超过3个电机（或类似大功率负载）的方案。
+
+### 特性2：编码器硬件资源匮乏，靠中断模拟
+
+-   **问题**：这颗MCU片上只有 **一套硬件正交编码器接口（QEI）**。但我们的后驱小车有两个电机，需要读取两个编码器的值来测速。
+-   **解决方案**：我们用了一个非常规但有效的方法——**用GPIO的外部中断来模拟**。
+-   **实现方式**：
+    *   一个电机的编码器接在了MCU唯一的硬件QEI接口上。
+    *   另一个电机的编码器（A/B相）则连接到两个普通的GPIO口，并为这两个GPIO口配置了 **双边沿触发的外部中断**。
+    -   在中断服务函数中，通过判断当前哪个引脚触发了中断以及另一个引脚的电平状态，手动模拟硬件QEI的逻辑来计数，从而实现速度和方向的判断。
+-   **你需要知道的**：`Hardware/Encoder/` 里的代码实现了这个复杂的逻辑。这是一个因硬件资源不足而采取的软件补偿方案。
+
+### 特性3：没有标准数据类型，已手动定义
+
+-   **问题**：这个新的MCU平台（或其编译器工具链）默认不包含 `stdint.h` 头文件，因此无法直接使用像 `uint8_t`, `int16_t` 这样的标准C语言数据类型。
+-   **解决方案**：为了代码的可移植性和可读性，我们已经在 `system/sys/sys.h` 文件中手动 `typedef` 了所有常用的标准数据类型，例如：
+    ```c
+    typedef unsigned char  uint8_t;
+    typedef signed   short int16_t;
+    typedef unsigned char  u8;
+    // ... 等等
+    ```
+-   **你需要知道的**：在编写代码时，你可以和在其他平台一样，正常包含`sys.h`并使用这些标准类型。如果发现类型未定义，请检查是否包含了 `system/sys/sys.h`。
+
+---
+
+## 4. 文件结构一览
+
+```
+.
+├── empty.c                 # MCU的主程序入口，所有代码从这里开始
+├── Hardware/               # 【核心】硬件驱动代码，每个文件夹对应一个外设
+│   ├── APP/                # 应用层，负责数据打包和发送
+│   ├── Control/            # 循迹车的速度与方向控制
+│   ├── Encoder/            # 电机编码器驱动 (其中一个为中断模拟)
+│   ├── HCSR04/             # 超声波测距传感器
+│   ├── HTS221/             # HTS221总线舵机驱动 (用于转向)
+│   ├── Key/                # 按键检测
+│   ├── line_follower/      # 红外循迹传感器
+│   ├── MPU6050/            # 六轴姿态传感器 (模块测试用)
+│   ├── OLED/               # OLED显示屏
+│   ├── PID/                # PID算法的通用实现
+│   ├── Serial/             # 串口通信
+│   ├── stepper/            # 步进电机驱动 (模块测试用)
+│   └── WIT/                # 【全自动】维特智能IMU (模块测试用)
+├── K230/                   # 勘智K230 AI芯片的配套Python代码
+│   ├── mian.py             # K230端的视觉巡线代码
+│   └── test.py             # K230端的测试代码
+├── README.md               # 就是你正在看的这份文档
+└── system/                 # MCU底层系统配置
+    ├── delay/              # 延时函数
+    └── sys/                # 系统时钟、中断、自定义数据类型
+```
+---
+
+## 5. 模块详解 (傻瓜式教程)
+
+### `empty.c` - 项目的大脑
+-   **作用**: 这是程序的主入口 `main` 函数所在地。你可以把它想象成项目的大脑，它负责指挥所有模块协同工作。
+-   **工作流程**:
+    1.  **`SYSCFG_DL_init()`**: 首先调用，由TI工具生成，完成所有硬件的底层初始化。**基本无需改动**。
+    2.  **外设初始化**: 接着，`main` 函数会逐个调用 `Hardware/` 目录下的初始化函数，如 `OLED_Init()`，以“唤醒”所有外设。
+    3.  **开启中断**: 通过 `NVIC_EnableIRQ()` 打开需要的硬件中断。
+    4.  **`while(1)` 主循环**: 在永不停止的循环中，持续执行测试任务，例如读取传感器数据并通过OLED显示。
+
+### `Control/` - 循迹车控制核心
+-   **新作用**: 不再是做平衡控制！现在它负责 **循迹车的速度控制和转向控制**。它会根据循迹模块 (`line_follower`) 的数据，计算出PID值，然后一方面控制后轮的速度，另一方面控制前方的HTS221舵机，使车辆沿黑线行驶。
+
+### `Encoder/` - 编码器驱动
+-   **作用**: 测量后轮电机的转速和方向，是速度PID控制的基础。
+-   **实现方式**: 如“巨坑警告”中所述，一个电机使用硬件QEI，另一个使用 **GPIO外部中断** 模拟，请特别注意这一点。
+
+### `HTS221/` - 转向总线舵机
+-   **作用**: 驱动 `HTS221` 这款总线舵机，它是小车的 **转向机构**。`Control` 模块会调用它来改变小车的行驶方向。
+
+### `line_follower/` - 红外循迹传感器
+-   **作用**: 驱动红外循迹模块，让小车能沿着地面上的黑线行走。
+-   **工作原理**: 通过红外发射/接收对检测地面颜色（黑线吸收红外，白底反射），为 `Control` 模块提供方向决策的依据。
+
+### `PID/` - PID控制器
+-   **作用**: 一个通用的PID算法实现，主要被 `Control` 模块调用，用于计算电机速度和舵机转向的的控制量。
+-   **工作原理**: 根据“目标值”和“当前值”的差距（误差），计算出合适的控制输出。
+
+### `OLED/` - OLED显示屏
+-   **作用**: 一个小屏幕，是项目调试的“功臣”。所有关键数据都可以在上面显示，方便观察运行状态。
+
+### `Serial/` 和 `APP/` - 串口通信与应用
+-   **`Serial/`**: 封装了UART的底层收发功能。
+-   **`APP/`**: 基于`Serial`，实现了更高层的应用逻辑，例如将传感器数据按特定格式打包，并通过串口发送给PC或K230。
+
+### `MPU6050/` 和 `WIT/` - IMU模块 (仅用于测试)
+-   **当前作用**: 由于项目不再是平衡车，这两个IMU（惯性测量单元）目前 **仅用于模块功能性测试**。你可以利用它们来学习如何读取IMU数据，但它们的输出值 **没有参与到小车的主要控制逻辑中**。
+-   **`WIT` (自动挡 IMU)** 的特性依然值得学习：它通过DMA实现数据自动更新，应用层代码无需关心数据读取过程，直接使用即可，非常高效。
+
+### `HCSR04/`, `Key/`, `stepper/` - 其他测试模块
+-   这几个模块（超声波、按键、步进电机）目前也都是作为独立的硬件功能测试存在的，没有深度整合到循迹车的主逻辑中。
+
+### `system/` - 系统底层
+-   **`sys/`**: 负责最底层的系统初始化、时钟配置，并定义了 **平台缺失的标准数据类型**。
+-   **`delay/`**: 提供了 `delay_ms()` 等阻塞式延时函数。
+
+### `K230/` - K230配套代码
+-   **定位**: 这是一个运行在 **另一块** 名为“勘智K230”的AI芯片上的Python项目。
+-   **`mian.py`**: 视觉巡线核心代码，负责图像处理，并将决策结果（如左转/右转）通过串口发给MSPM0主控。
+-   **`test.py`**: 用于在K230上进行某些功能测试的独立脚本。
+
+
