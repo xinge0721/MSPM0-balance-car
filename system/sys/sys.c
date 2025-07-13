@@ -131,26 +131,26 @@ void TIMER_0_INST_IRQHandler(void)
     // 初始化PID
     // 右轮PID
         static pid right = {
-        1,//kp
-        15,//ki
-        1,//kd
+        0.5,//kp
+        5,//ki
+        0,//kd
         0,//last_err
-        3200,//MAX
-        3200,//MIN
+        3599,//MAX
+        3599,//MIN
         0,//ControlVelocity
         0//
     };
 
     // 左轮PID
     static pid left = {
-        1,//kp
+        0.5,//kp
         5,//ki
-        1,//kd
+        0,//kd
         0,//last_err
-        3200,//MAX
-        3200,//MIN
+        3599,//MAX
+        3599,//MIN
         0,//ControlVelocity
-        0
+        0//
     };
 
     // 旋转PID
@@ -183,9 +183,10 @@ void TIMER_0_INST_IRQHandler(void)
                 // 获取左编码值
                 right.now_speed = left_encoder_value  = -Get_Encoder_Left();
                 // 获取右编码值
-                left.now_speed = right_encoder_value = Get_Encoder_Right();
+                left.now_speed = right_encoder_value = - Get_Encoder_Right();
+
                 // 运行PID
-                PID_run(left,right,turn,0,70);
+                PID_run_line(left,right,turn,50,g_angle_deviation);
             }
 
             
@@ -196,4 +197,29 @@ void TIMER_0_INST_IRQHandler(void)
     }
 }
 
+// 修改 PA 引脚电平
+void PA_out(uint32_t pin,uint32_t mode)
+{
+    if(mode == 1)
+    {
+        DL_GPIO_setPins(GPIOA, pin);
+    }
+    else if(mode == 0)
+    {
+        DL_GPIO_clearPins(GPIOA, pin);
+    }
+}
+
+// 修改 PB 引脚电平
+void PB_out(uint32_t pin,uint32_t mode)
+{
+    if(mode == 1)
+    {
+        DL_GPIO_setPins(GPIOB, pin);
+    }
+    else if(mode == 0)
+    {
+        DL_GPIO_clearPins(GPIOB, pin);
+    }
+}
 

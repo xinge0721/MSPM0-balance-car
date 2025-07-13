@@ -25,7 +25,11 @@ int main( void )
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
     NVIC_EnableIRQ(GPIOB_INT_IRQn);
 
-    // 这里需要传入对应的串口print的函数，是函数名，因为参数是一个函数指针
+    NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
+
+    NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
+
+    // 这里需要传入对应的串口print的函数，参数是函数名，因为参数是一个函数指针
     APP_Init(uart0_printf);
 
     // 维特陀螺仪初始化
@@ -33,24 +37,24 @@ int main( void )
 
     while(1)
     {
-        uint32_t Value = (int)SR04_GetLength();
+        // uint32_t Value = (int)SR04_GetLength();
         // 在第二行显示右轮编码器值
         OLED_ShowString(1, 1, "R:");
 
-        OLED_ShowSignedNum(1, 3,(uint32_t)right_encoder_value, 4);
+        OLED_ShowSignedNum(1, 3,right_encoder_value, 4);
         
         OLED_ShowString(2, 1, "L:");
 
-        OLED_ShowSignedNum(2, 3,(uint32_t)left_encoder_value, 4);
+        OLED_ShowSignedNum(2, 3,left_encoder_value, 4);
         OLED_ShowString(3, 1, "Value:");
 
-        OLED_ShowSignedNum(3, 7,Value, 4);
+        OLED_ShowSignedNum(3, 7,0, 4);
 
         OLED_ShowString(4, 1, "yaw:");
-        OLED_ShowFloatNum(4, 7, (wit_data.yaw),3);
-
+        OLED_ShowFloatNum(4, 7, (g_angle_deviation),3);
+        // APP_Send((float[]){right_encoder_value,left_encoder_value,50},3);
         // 添加适当的延时，避免刷新过快
-        // delay_ms(10);
+        delay_ms(10);
     }
 }
 

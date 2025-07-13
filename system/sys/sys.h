@@ -40,4 +40,14 @@ void system_init(void);
 extern float left_encoder_value;
 // 右编码器值
 extern float right_encoder_value;
+
+// 修改 PA 引脚电平
+void PA_out(uint32_t pin,uint32_t mode);
+// 修改 PB 引脚电平
+void PB_out(uint32_t pin,uint32_t mode);
+// 读取 PA 引脚电平
+#define PA_get(pin) DL_GPIO_readPins(GPIOA, pin)
+// 读取 PB 引脚电平
+#define PB_get(pin) DL_GPIO_readPins(GPIOB, pin)
+
 #endif /* __SYS_H */ 

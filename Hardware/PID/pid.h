@@ -22,6 +22,7 @@ typedef struct pid
 // 参数四：i
 // 参数五：速度
 #define PID_run(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
+#define PID_run_line(pid_speed_left,pid_speed_right,pid_turn_right,speed,angle) mithon_run_line(&pid_speed_left,&pid_speed_right,&pid_turn_right,speed,angle)
 
 /************
 通用转向环或者角度环：输入目标位置和当前位置
@@ -35,6 +36,7 @@ int Turn_Pid(pid *pid,int now_position,float tar_position);
 int FeedbackControl(pid *pid,int TargetVelocity, int CurrentVelocity);
 
 void mithon_run(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float i, float speed);
+void mithon_run_line(pid *pid_speed_left, pid *pid_speed_right, pid *pid_turn_right, float speed, float angle);
 
 
 #endif

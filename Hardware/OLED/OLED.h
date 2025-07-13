@@ -43,7 +43,7 @@ void OLED_ShowBinNum(uint8_t Line, uint8_t Column, uint32_t Number, uint8_t Leng
 //----------------------------------------------------------------------------------
 //OLED SSD1306 I2C 数据SDA
 #define		OLED_SDA_Set()				(DL_GPIO_setPins(OLED_SDA_PORT, _OLED_SDA_PIN))
-#define		OLED_SDA_Clr()			    (DL_GPIO_clearPins(OLED_SDA_PORT, _OLED_SDA_PIN))
+#define		OLED_SDA_Clr()			  (DL_GPIO_clearPins(OLED_SDA_PORT, _OLED_SDA_PIN))
 
 // 内部I2C控制函数
 void OLED_I2C_Start(void);

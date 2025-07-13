@@ -5,6 +5,7 @@
 
 // 定义接收数据变量
 extern uint8_t uart_data;
+extern int g_angle_deviation;
 
 void uart0_send_char(char ch);
 void uart0_send_string(char* str);

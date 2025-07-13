@@ -135,6 +135,7 @@ Hardware/OLED \
 Hardware/PID \
 Hardware/Serial \
 Hardware/WIT \
+Hardware/line_follower \
 system/delay \
 system/sys \
 

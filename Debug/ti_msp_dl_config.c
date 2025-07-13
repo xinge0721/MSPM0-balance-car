@@ -257,7 +257,7 @@ static const DL_TimerA_ClockConfig gPWMClockConfig = {
 
 static const DL_TimerA_PWMConfig gPWMConfig = {
     .pwmMode = DL_TIMER_PWM_MODE_EDGE_ALIGN_UP,
-    .period = 3200,
+    .period = 3599,
     .isTimerWithFourCC = false,
     .startTimer = DL_TIMER_START,
 };
@@ -395,7 +395,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_UART_WIT_init(void)
 
     /* Configure Interrupts */
     DL_UART_Main_enableInterrupt(UART_WIT_INST,
-                                 DL_UART_MAIN_INTERRUPT_RX_TIMEOUT_ERROR);
+                                 DL_UART_MAIN_INTERRUPT_RX);
+    /* Setting the Interrupt Priority */
+    NVIC_SetPriority(UART_WIT_INST_INT_IRQN, 0);
 
     /* Configure DMA Receive Event */
     DL_UART_Main_enableDMAReceiveEvent(UART_WIT_INST, DL_UART_DMA_INTERRUPT_RX);
@@ -435,6 +437,10 @@ SYSCONFIG_WEAK void SYSCFG_DL_UART_0_init(void)
     DL_UART_Main_setOversampling(UART_0_INST, DL_UART_OVERSAMPLING_RATE_16X);
     DL_UART_Main_setBaudRateDivisor(UART_0_INST, UART_0_IBRD_32_MHZ_115200_BAUD, UART_0_FBRD_32_MHZ_115200_BAUD);
 
+
+    /* Configure Interrupts */
+    DL_UART_Main_enableInterrupt(UART_0_INST,
+                                 DL_UART_MAIN_INTERRUPT_RX);
 
 
     DL_UART_Main_enable(UART_0_INST);

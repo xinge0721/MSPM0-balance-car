@@ -53,4 +53,22 @@ void mithon_run(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, f
 
 	Control_speed(Lpwm,Rpwm);
 }
+// 巡线
+// 参数一：左轮PID
+// 参数二：右轮PID
+// 参数三：转向PID
+// 参数四：速度
+// 参数五：角度
+void mithon_run_line(pid *pid_speed_left, pid *pid_speed_right, pid *pid_turn_right, float speed, float angle)
+{
+	// 计算当前角度与目标角度的差值，计算转向修正值
+	// 目标角度为0，angle是误差角度
+	int ADD = Turn_Pid(pid_turn_right, 0, angle);   // 当前角度与目标角度
+	
+	// 左轮速度 = 基准速度 - 修正值
+	int Lpwm = FeedbackControl(pid_speed_left, speed - ADD, pid_speed_left->now_speed);
+	// 右轮速度 = 基准速度 + 修正值
+	int Rpwm = FeedbackControl(pid_speed_right, speed + ADD, pid_speed_right->now_speed);
 
+	Control_speed(Lpwm,Rpwm);
+}
