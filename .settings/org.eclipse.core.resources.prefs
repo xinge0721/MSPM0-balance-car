@@ -1,6 +1,8 @@
 eclipse.preferences.version=1
 encoding//Debug/Hardware/APP/subdir_rules.mk=UTF-8
 encoding//Debug/Hardware/APP/subdir_vars.mk=UTF-8
+encoding//Debug/Hardware/BSP/subdir_rules.mk=UTF-8
+encoding//Debug/Hardware/BSP/subdir_vars.mk=UTF-8
 encoding//Debug/Hardware/Control/subdir_rules.mk=UTF-8
 encoding//Debug/Hardware/Control/subdir_vars.mk=UTF-8
 encoding//Debug/Hardware/Encoder/subdir_rules.mk=UTF-8
@@ -17,6 +19,8 @@ encoding//Debug/Hardware/PID/subdir_rules.mk=UTF-8
 encoding//Debug/Hardware/PID/subdir_vars.mk=UTF-8
 encoding//Debug/Hardware/Serial/subdir_rules.mk=UTF-8
 encoding//Debug/Hardware/Serial/subdir_vars.mk=UTF-8
+encoding//Debug/Hardware/Servo/subdir_rules.mk=UTF-8
+encoding//Debug/Hardware/Servo/subdir_vars.mk=UTF-8
 encoding//Debug/Hardware/WIT/subdir_rules.mk=UTF-8
 encoding//Debug/Hardware/WIT/subdir_vars.mk=UTF-8
 encoding//Debug/MPU6050/subdir_rules.mk=UTF-8

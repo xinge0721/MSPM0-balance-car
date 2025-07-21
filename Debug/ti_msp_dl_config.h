@@ -177,6 +177,12 @@ extern "C" {
 /* Defines for PIN_22: GPIOB.22 with pinCMx 50 on package pin 21 */
 #define LED_PIN_22_PIN                                          (DL_GPIO_PIN_22)
 #define LED_PIN_22_IOMUX                                         (IOMUX_PINCM50)
+/* Port definition for Pin Group GPIO_Servo */
+#define GPIO_Servo_PORT                                                  (GPIOB)
+
+/* Defines for PIN_15: GPIOB.15 with pinCMx 32 on package pin 3 */
+#define GPIO_Servo_PIN_15_PIN                                   (DL_GPIO_PIN_15)
+#define GPIO_Servo_PIN_15_IOMUX                                  (IOMUX_PINCM32)
 /* Port definition for Pin Group OLED */
 #define OLED_PORT                                                        (GPIOB)
 
@@ -224,15 +230,14 @@ extern "C" {
 #define encoder_right_B_IIDX                                (DL_GPIO_IIDX_DIO22)
 #define encoder_right_B_PIN                                     (DL_GPIO_PIN_22)
 #define encoder_right_B_IOMUX                                    (IOMUX_PINCM47)
-/* Port definition for Pin Group HCSR04 */
-#define HCSR04_PORT                                                      (GPIOB)
-
 /* Defines for TRIG: GPIOB.14 with pinCMx 31 on package pin 2 */
+#define HCSR04_TRIG_PORT                                                 (GPIOB)
 #define HCSR04_TRIG_PIN                                         (DL_GPIO_PIN_14)
 #define HCSR04_TRIG_IOMUX                                        (IOMUX_PINCM31)
-/* Defines for ECHO: GPIOB.15 with pinCMx 32 on package pin 3 */
-#define HCSR04_ECHO_PIN                                         (DL_GPIO_PIN_15)
-#define HCSR04_ECHO_IOMUX                                        (IOMUX_PINCM32)
+/* Defines for ECHO: GPIOA.12 with pinCMx 34 on package pin 5 */
+#define HCSR04_ECHO_PORT                                                 (GPIOA)
+#define HCSR04_ECHO_PIN                                         (DL_GPIO_PIN_12)
+#define HCSR04_ECHO_IOMUX                                        (IOMUX_PINCM34)
 /* Port definition for Pin Group SR04 */
 #define SR04_PORT                                                        (GPIOB)
 

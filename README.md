@@ -1,41 +1,161 @@
-## Example Summary
+# 【交接专用】四轮循迹模块测试平台超详细说明文档
 
-Empty C++ project using DriverLib.
-This example shows a basic empty project using DriverLib with just main C++ file
-and SysConfig initialization.
+## 1. 【重要】项目背景与现状
 
-## Peripherals & Pin Assignments
+**请务必先阅读本节！**
 
-| Peripheral | Pin | Function |
-| --- | --- | --- |
-| SYSCTL |  |  |
-| DEBUGSS | PA20 | Debug Clock |
-| DEBUGSS | PA19 | Debug Data In Out |
+各位接手的同事请注意，本项目的当前状态与代码仓库的名称 **严重不符**。
 
-## BoosterPacks, Board Resources & Jumper Settings
+-   **项目名称的历史遗留问题**：本项目最初是为一个 **两轮自平衡小车** 而创建的，因此仓库和工程名是 `balance car`。
+-   **当前实际功能**：由于原项目被砍，现在它已经被改造为一个 **用于模块功能验证的四轮循迹车**。
+-   **车体结构**：
+    *   **四轮结构**：前二轮为无动力的万向轮，后二轮为驱动轮。
+    *   **后轮驱动**：由两个电机提供动力。
+    *   **舵机转向**：依靠一个舵机（型号为HTS221）来改变前轮方向，实现转向。
+-   **核心任务**：当前项目的主要目标是作为 **硬件模块的测试平台** 和 **未来功能扩展的基础**。
 
-Visit [LP_MSPM0G3507](https://www.ti.com/tool/LP-MSPM0G3507) for LaunchPad information, including user guide and hardware files.
+---
 
-| Pin | Peripheral | Function | LaunchPad Pin | LaunchPad Settings |
-| --- | --- | --- | --- | --- |
-| PA20 | DEBUGSS | SWCLK | N/A | <ul><li>PA20 is used by SWD during debugging<br><ul><li>`J101 15:16 ON` Connect to XDS-110 SWCLK while debugging<br><li>`J101 15:16 OFF` Disconnect from XDS-110 SWCLK if using pin in application</ul></ul> |
-| PA19 | DEBUGSS | SWDIO | N/A | <ul><li>PA19 is used by SWD during debugging<br><ul><li>`J101 13:14 ON` Connect to XDS-110 SWDIO while debugging<br><li>`J101 13:14 OFF` Disconnect from XDS-110 SWDIO if using pin in application</ul></ul> |
+## 2. 环境搭建与运行
 
-### Device Migration Recommendations
-This project was developed for a superset device included in the LP_MSPM0G3507 LaunchPad. Please
-visit the [CCS User's Guide](https://software-dl.ti.com/msp430/esd/MSPM0-SDK/latest/docs/english/tools/ccs_ide_guide/doc_guide/doc_guide-srcs/ccs_ide_guide.html#sysconfig-project-migration)
-for information about migrating to other MSPM0 devices.
+本项目基于“立创·地猛星MSPM0G3507开发板”，所有环境搭建、编译、烧录的详细步骤，请 **严格参考** 以下官方中文文档站，其中包含了最权威、最详尽的图文教程：
 
-### Low-Power Recommendations
-TI recommends to terminate unused pins by setting the corresponding functions to
-GPIO and configure the pins to output low or input with internal
-pullup/pulldown resistor.
+➡️ **[https://wiki.lckfb.com/zh-hans/](https://wiki.lckfb.com/zh-hans/)**
 
-SysConfig allows developers to easily configure unused pins by selecting **Board**→**Configure Unused Pins**.
+请在该网站中查找与 **MSPM0G3507** 相关的教程。
 
-For more information about jumper configuration to achieve low-power using the
-MSPM0 LaunchPad, please visit the [LP-MSPM0G3507 User's Guide](https://www.ti.com/lit/slau873).
+---
 
-## Example Usage
+## 3. 【必读】平台特性与巨坑警告
 
-Compile, load and run the example.
+在开始看代码前，请务必了解这块单片机（MCU）的一些“个性”和局限性，能帮你省下大量调试时间。
+
+### 警告1：MCU性能孱弱，无法同时驱动4个电机！
+-   **现象**：这颗MCU的驱动能力非常有限。当尝试同时驱动4个电机时（例如，使用一个定时器的4个PWM通道），你会发现前3个电机工作正常，但 **第4个电机会变得异常缓慢，像是慢了半拍**。
+-   **结论**：这不是程序BUG，而是 **芯片的物理性能瓶颈**。在未来的开发中，请避免设计需要同时高速驱动超过3个电机（或类似大功率负载）的方案。
+
+### 警告2：SysTick只有毫秒(ms)精度，微秒(us)延时是“假”的！
+-   **问题**：这颗MCU内置的滴答定时器（SysTick）中断，只能实现`ms`级别的非阻塞延时。
+-   **`delay_us`的真相**：代码中虽然提供了`delay_us`函数，但它并非由定时器实现，而是通过`delay_cycles`函数，让CPU执行一个根据时钟频率计算出的、精确的空循环。
+-   **结论**：`delay_ms`是较为高效的（触发中断后CPU可干别的事），而`delay_us`是 **纯粹的阻塞式延时**，在使用微秒延时期间，CPU将被完全占用，无法处理任何其他任务。请在使用时特别注意这一点。
+
+### 特性3：编码器硬件资源匮乏，纯靠中断模拟
+-   **问题**：这颗MCU片上没有足够的硬件正交编码器接口（QEI）来同时处理两个电机的编码器。
+-   **解决方案**：两个后轮电机的编码器，**全部** 都是通过配置GPIO的 **双边沿外部中断** 来模拟QEI功能的。
+-   **实现方式**：在中断服务函数中，通过判断当前哪个引脚（A相或B相）触发了中断，并结合另一相引脚的电平状态，用软件逻辑来判断方向和累加/减计数，从而计算出速度。
+-   **你需要知道的**：`Hardware/Encoder/` 里的代码实现了这个复杂的逻辑。这是一个因硬件资源不足而采取的纯软件补偿方案。
+
+### 特性4：没有标准数据类型，已手动定义
+-   **问题**：这个新的MCU平台（或其编译器工具链）默认不包含 `stdint.h` 头文件，因此无法直接使用像 `uint8_t`, `int16_t` 这样的标准C语言数据类型。
+-   **解决方案**：为了代码的可移植性和可读性，我们已经在 `system/sys/sys.h` 文件中手动 `typedef` 了所有常用的标准数据类型。
+-   **你需要知道的**：在编写代码时，正常包含`sys.h`即可使用这些标准类型。如果发现类型未定义，请检查是否包含了 `system/sys/sys.h`。
+
+---
+
+## 4. 文件结构一览
+```
+.
+├── empty.c                 # MCU的主程序入口
+├── Hardware/               # 【核心】硬件驱动代码
+│   ├── APP/                # 应用层通信协议
+│   ├── Control/            # 循迹车控制逻辑
+│   ├── Encoder/            # 电机编码器驱动 (纯中断模拟)
+│   ├── HCSR04/             # 超声波传感器驱动
+│   ├── HTS221/             # HTS221总线舵机驱动 (用于转向)
+│   ├── Key/                # 按键驱动
+│   ├── line_follower/      # 红外循迹传感器驱动
+│   ├── MPU6050/            # MPU6050姿态传感器驱动
+│   ├── OLED/               # OLED显示屏驱动
+│   ├── PID/                # PID算法实现
+│   ├── Serial/             # 串口底层驱动
+│   ├── stepper/            # 步进电机驱动
+│   └── WIT/                # 维特智能IMU驱动
+├── K230/                   # 勘智K230的配套Python代码
+│   ├── mian.py             # K230端视觉巡线代码
+│   └── test.py             # K230端测试代码
+├── README.md               # 本文档
+└── system/                 # MCU底层系统配置
+    ├── delay/              # 延时函数
+    └── sys/                # 系统核心配置
+```
+---
+
+## 5. 模块详解
+
+### **主干逻辑与核心模块**
+
+#### `empty.c` - 项目的大脑
+-   **作用**: 程序主入口`main`函数所在地，负责初始化系统并进入主循环，协调所有模块工作。
+-   **工作流程**:
+    1.  `SYSCFG_DL_init()`: TI工具生成的底层硬件初始化。
+    2.  `OLED_Init()`, `APP_Init()`等: 调用各个模块的初始化函数。
+    3.  `NVIC_EnableIRQ()`: 开启所需的中断。
+    4.  `while(1)`: 主循环，执行周期性任务，如刷新OLED显示。
+
+#### `Control/` - 循迹车控制核心
+-   **作用**: 实现循迹车的核心逻辑，包括速度和方向控制。它接收来自`line_follower`模块的数据，通过PID算法计算后，控制后轮驱动电机和前方的`HTS221`转向舵机。
+-   **关键函数**:
+    -   `Control_forward()` / `Control_back()` / `Control_stop()`: 控制电机定性运动。
+    -   `Control_speed(int left, int right)`: 分别设置左右轮的速度和方向（正负代表方向）。
+
+#### `Encoder/` - 编码器驱动 (纯中断模拟)
+-   **作用**: 测量两个后轮电机的转速和方向，是速度PID控制的基础。
+-   **实现方式**: 如“巨坑警告”所述，两个编码器**都**是使用GPIO外部中断模拟的。
+
+#### `HTS221/` - 转向总线舵机
+-   **作用**: 驱动`HTS221`这款总线舵机，作为小车的**转向机构**。
+
+#### `line_follower/` - 红外循迹传感器
+-   **作用**: 检测地面黑线，为`Control`模块提供方向决策依据。
+-   **工作原理**: `line_follower_read()`将12个红外传感器的状态读成一个12位的二进制数。`line_follower_get_error()`则根据这个二进制数，计算出当前车身与黑线的偏移量（一个从-55到+55的误差值），用于PID计算。
+
+#### `PID/` - PID控制器
+-   **作用**: 通用的PID算法实现，被`Control`模块调用来计算电机和舵机的控制量。
+-   **关键函数**:
+    -   `Turn_Pid()`: 位置式PID，用于转向控制，根据目标角度和当前角度计算修正值。
+    -   `FeedbackControl()`: 增量式PI，用于速度控制，根据目标速度和当前速度计算输出。
+    -   `mithon_run_line()`: 将转向PID和速度PID结合，最终输出左右轮的速度值给`Control_speed`函数。
+
+#### `OLED/` - OLED显示屏
+-   **作用**: 调试“功臣”，用于在屏幕上实时显示各种关键数据。
+
+### **通信与底层模块**
+
+#### `APP/` - 上位机通信与调试模块
+-   **核心作用**：一个专为**调试**设计的应用层模块，用于将MCU数据打包后通过串口发送给PC上位机（如FireWater）。
+-   **精髓设计：函数指针**：通过`APP_Init(app_printf_t p_printf)`函数，将底层的串口发送函数（如`uart0_printf`）注册进来，实现了解耦。使用时，只需在`main`函数中调用`APP_Init(uart0_printf);`即可。
+
+#### `Serial/` - 串口驱动
+-   **作用**: 封装了UART的底层收发功能，为`APP`模块提供基础。
+
+#### `system/` - 系统底层
+-   **`sys/`**: 负责系统初始化、时钟配置，并**定义了平台缺失的标准数据类型**。
+-   **`delay/`**: 提供`delay_ms`（基于SysTick）和`delay_us`（阻塞式）延时函数。
+
+#### `K230/` - K230配套代码
+-   **定位**: 运行在**另一块**“勘智K230”AI芯片上的Python项目。
+-   **`mian.py`**: 视觉巡线核心代码，将图像处理结果通过串口发给MSPM0主控。
+-   **`test.py`**: 用于K230上的功能测试脚本。
+
+### **为未来功能预留的驱动模块**
+
+以下模块的驱动代码已经编写完成并经过测试，虽然当前未整合到循迹主逻辑中，但它们是未来功能扩展的重要基础。
+
+#### `MPU6050/` 和 `WIT/` - IMU姿态传感器
+-   **预留功能**: 为车辆增加姿态感知能力，例如检测坡度、颠簸，或用于开发更高级的运动控制算法。
+-   **`WIT` (自动挡IMU)**: 驱动已配置为DMA模式，应用层可直接读取姿态数据，无需关心刷新过程，是未来开发的首选。
+-   **`MPU6050` (手动挡IMU)**: 经典的六轴传感器，提供了另一种IMU数据读取方案。
+
+#### `HCSR04/` - 超声波传感器
+-   **预留功能**: 实现**自主避障**。通过测量与前方障碍物的距离，可以实现遇障停车或绕行等功能。
+-   **工作原理**: `SR04_GetLength()`函数通过GPIO触发超声波模块，并利用定时器和GPIO中断来计算回波时间，最终换算出距离（厘米）。整个过程是带超时的，防止程序卡死。
+
+#### `Key/` - 按键
+-   **预留功能**: 实现**用户交互**。可以定义按键功能为启动/停止、模式切换等。
+-   **工作原理**: 这是一个功能非常完善的按键驱动，内部实现了一个精巧的状态机(`KEY_ReadStateMachine`)，通过定时扫描按键IO口，能够自动处理按键的抖动，并准确区分**单击**、**双击**和**长按**三种事件。
+
+#### `stepper/` - 步进电机
+-   **预留功能**: 这是一个通用的步进电机驱动。未来可以用于控制车上搭载的任何需要精确角度控制的设备，例如升降装置、采样机械臂等。
+-   **工作原理**: 通过纯软件方式，在GPIO口上模拟产生控制步进电机所需的PUL（脉冲）和DIR（方向）信号。`stepping_return_agle()`函数可以将输入的角度值，自动换算成需要的脉冲数进行驱动。
+
+

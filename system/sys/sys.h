@@ -1,5 +1,5 @@
-#ifndef __SYS_H
-#define __SYS_H
+#ifndef __SYS_H_
+#define __SYS_H_
 #include "ti_msp_dl_config.h"
 #include "system/delay/delay.h"
 #include "Hardware/Encoder/Encoder.h"

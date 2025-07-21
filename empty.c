@@ -1,11 +1,11 @@
 #include "ti_msp_dl_config.h"
 #include <math.h>
 #include <stdio.h>
-
+#include "./Hardware/servo/servo.h"
 #include "system/sys/sys.h"
 
 
-int i = 0;
+
 
 int main( void )
 {
@@ -20,8 +20,8 @@ int main( void )
     // OLED初始化
     OLED_Init();
 
-    // // 初始化系统中断
-    // // 使能(打开) 编码器 端口的中断。左轮编码器的引脚接在GPIOA上。
+    // 初始化系统中断
+    // 使能(打开) 编码器 端口的中断。左轮编码器的引脚接在GPIOA上。
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
     NVIC_EnableIRQ(GPIOB_INT_IRQn);
 
@@ -33,22 +33,23 @@ int main( void )
 
     while(1)
     {
-        uint32_t Value = (int)SR04_GetLength();
+        // uint32_t Value = (int)SR04_GetLength();
         // 在第二行显示右轮编码器值
         OLED_ShowString(1, 1, "R:");
 
-        OLED_ShowSignedNum(1, 3,(uint32_t)right_encoder_value, 4);
+        OLED_ShowSignedNum(1, 3,right_encoder_value, 4);
         
         OLED_ShowString(2, 1, "L:");
 
-        OLED_ShowSignedNum(2, 3,(uint32_t)left_encoder_value, 4);
+        OLED_ShowSignedNum(2, 3,left_encoder_value, 4);
         OLED_ShowString(3, 1, "Value:");
 
-        OLED_ShowSignedNum(3, 7,Value, 4);
+        OLED_ShowSignedNum(3, 7,0, 4);
 
         OLED_ShowString(4, 1, "yaw:");
         OLED_ShowFloatNum(4, 7, (wit_data.yaw),3);
 
+        // Set_Servo_Angle(i);
         // 添加适当的延时，避免刷新过快
         // delay_ms(10);
     }

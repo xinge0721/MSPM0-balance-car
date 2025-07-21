@@ -146,6 +146,8 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_PULL_DOWN,
 		 DL_GPIO_DRIVE_STRENGTH_LOW, DL_GPIO_HIZ_DISABLE);
 
+    DL_GPIO_initDigitalOutput(GPIO_Servo_PIN_15_IOMUX);
+
     DL_GPIO_initDigitalOutput(OLED_SCL_IOMUX);
 
     DL_GPIO_initDigitalOutput(OLED_SDA_IOMUX);
@@ -184,10 +186,12 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		 DL_GPIO_INVERSION_DISABLE, DL_GPIO_RESISTOR_NONE,
 		 DL_GPIO_HYSTERESIS_DISABLE, DL_GPIO_WAKEUP_DISABLE);
 
+    DL_GPIO_clearPins(GPIOA, HCSR04_ECHO_PIN);
     DL_GPIO_setPins(GPIOA, Control_AIN1_PIN |
 		Control_AIN2_PIN);
     DL_GPIO_enableOutput(GPIOA, Control_AIN1_PIN |
-		Control_AIN2_PIN);
+		Control_AIN2_PIN |
+		HCSR04_ECHO_PIN);
     DL_GPIO_setLowerPinsPolarity(GPIOA, DL_GPIO_PIN_15_EDGE_RISE_FALL);
     DL_GPIO_setUpperPinsPolarity(GPIOA, DL_GPIO_PIN_16_EDGE_RISE_FALL |
 		DL_GPIO_PIN_17_EDGE_RISE_FALL |
@@ -201,20 +205,20 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 		encoder_right_A_PIN |
 		encoder_right_B_PIN);
     DL_GPIO_clearPins(GPIOB, LED_PIN_22_PIN |
+		GPIO_Servo_PIN_15_PIN |
 		OLED_SCL_PIN |
 		OLED_SDA_PIN |
 		Control_BIN1_PIN |
 		Control_BIN2_PIN |
-		HCSR04_TRIG_PIN |
-		HCSR04_ECHO_PIN);
+		HCSR04_TRIG_PIN);
     DL_GPIO_setPins(GPIOB, SR04_Trig_PIN);
     DL_GPIO_enableOutput(GPIOB, LED_PIN_22_PIN |
+		GPIO_Servo_PIN_15_PIN |
 		OLED_SCL_PIN |
 		OLED_SDA_PIN |
 		Control_BIN1_PIN |
 		Control_BIN2_PIN |
 		HCSR04_TRIG_PIN |
-		HCSR04_ECHO_PIN |
 		SR04_Trig_PIN);
     DL_GPIO_setLowerPinsPolarity(GPIOB, DL_GPIO_PIN_13_EDGE_FALL |
 		DL_GPIO_PIN_5_EDGE_RISE_FALL);
@@ -257,7 +261,7 @@ static const DL_TimerA_ClockConfig gPWMClockConfig = {
 
 static const DL_TimerA_PWMConfig gPWMConfig = {
     .pwmMode = DL_TIMER_PWM_MODE_EDGE_ALIGN_UP,
-    .period = 3200,
+    .period = 3599,
     .isTimerWithFourCC = false,
     .startTimer = DL_TIMER_START,
 };

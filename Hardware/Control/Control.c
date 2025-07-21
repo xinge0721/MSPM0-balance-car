@@ -6,7 +6,7 @@
 
 // 电机方向控制宏定义
 #define MOTOR_left_DIRECTION 1  // 1为正常方向，0为反向
-#define MOTOR_right_DIRECTION 1  // 1为正常方向，0为反向
+#define MOTOR_right_DIRECTION 0  // 1为正常方向，0为反向
 
 // 左电机方向控制
 // 注释：因为不是所有人的接线方式都一样，所以需要根据实际情况来选择

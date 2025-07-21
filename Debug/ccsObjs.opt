@@ -14,6 +14,7 @@
 "./Hardware/OLED/OLED.o"
 "./Hardware/PID/pid.o"
 "./Hardware/Serial/Serial.o"
+"./Hardware/Servo/Servo.o"
 "./Hardware/WIT/interrupt.o"
 "./Hardware/WIT/wit.o"
 "./system/delay/delay.o"

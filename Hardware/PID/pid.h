@@ -22,6 +22,7 @@ typedef struct pid
 // 参数四：i
 // 参数五：速度
 #define PID_run(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
+#define PID_run_xunxian(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run_xunxian(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
 
 /************
 通用转向环或者角度环：输入目标位置和当前位置

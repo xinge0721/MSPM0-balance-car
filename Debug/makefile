@@ -26,6 +26,7 @@ ORDERED_OBJS += \
 "./Hardware/OLED/OLED.o" \
 "./Hardware/PID/pid.o" \
 "./Hardware/Serial/Serial.o" \
+"./Hardware/Servo/Servo.o" \
 "./Hardware/WIT/interrupt.o" \
 "./Hardware/WIT/wit.o" \
 "./system/delay/delay.o" \
@@ -51,6 +52,7 @@ RMDIR := RMDIR /S/Q
 -include Hardware/OLED/subdir_vars.mk
 -include Hardware/PID/subdir_vars.mk
 -include Hardware/Serial/subdir_vars.mk
+-include Hardware/Servo/subdir_vars.mk
 -include Hardware/WIT/subdir_vars.mk
 -include system/delay/subdir_vars.mk
 -include system/sys/subdir_vars.mk
@@ -64,6 +66,7 @@ RMDIR := RMDIR /S/Q
 -include Hardware/OLED/subdir_rules.mk
 -include Hardware/PID/subdir_rules.mk
 -include Hardware/Serial/subdir_rules.mk
+-include Hardware/Servo/subdir_rules.mk
 -include Hardware/WIT/subdir_rules.mk
 -include system/delay/subdir_rules.mk
 -include system/sys/subdir_rules.mk
@@ -184,8 +187,8 @@ MSPM0\ balance\ car.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "empty.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\Control\Control.o" "Hardware\Encoder\Encoder.o" "Hardware\HCSR04\HCSR04.o" "Hardware\HTS221\HTS221.o" "Hardware\MPU6050\inv_mpu.o" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.o" "Hardware\MPU6050\mpu6050.o" "Hardware\MPU6050\mspm0_clock.o" "Hardware\MPU6050\mspm0_i2c.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" "Hardware\WIT\interrupt.o" "Hardware\WIT\wit.o" "system\delay\delay.o" "system\sys\sys.o" 
-	-$(RM) "empty.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "Hardware\APP\APP.d" "Hardware\Control\Control.d" "Hardware\Encoder\Encoder.d" "Hardware\HCSR04\HCSR04.d" "Hardware\HTS221\HTS221.d" "Hardware\MPU6050\inv_mpu.d" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.d" "Hardware\MPU6050\mpu6050.d" "Hardware\MPU6050\mspm0_clock.d" "Hardware\MPU6050\mspm0_i2c.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" "Hardware\WIT\interrupt.d" "Hardware\WIT\wit.d" "system\delay\delay.d" "system\sys\sys.d" 
+	-$(RM) "empty.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "Hardware\APP\APP.o" "Hardware\Control\Control.o" "Hardware\Encoder\Encoder.o" "Hardware\HCSR04\HCSR04.o" "Hardware\HTS221\HTS221.o" "Hardware\MPU6050\inv_mpu.o" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.o" "Hardware\MPU6050\mpu6050.o" "Hardware\MPU6050\mspm0_clock.o" "Hardware\MPU6050\mspm0_i2c.o" "Hardware\OLED\OLED.o" "Hardware\PID\pid.o" "Hardware\Serial\Serial.o" "Hardware\Servo\Servo.o" "Hardware\WIT\interrupt.o" "Hardware\WIT\wit.o" "system\delay\delay.o" "system\sys\sys.o" 
+	-$(RM) "empty.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "Hardware\APP\APP.d" "Hardware\Control\Control.d" "Hardware\Encoder\Encoder.d" "Hardware\HCSR04\HCSR04.d" "Hardware\HTS221\HTS221.d" "Hardware\MPU6050\inv_mpu.d" "Hardware\MPU6050\inv_mpu_dmp_motion_driver.d" "Hardware\MPU6050\mpu6050.d" "Hardware\MPU6050\mspm0_clock.d" "Hardware\MPU6050\mspm0_i2c.d" "Hardware\OLED\OLED.d" "Hardware\PID\pid.d" "Hardware\Serial\Serial.d" "Hardware\Servo\Servo.d" "Hardware\WIT\interrupt.d" "Hardware\WIT\wit.d" "system\delay\delay.d" "system\sys\sys.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

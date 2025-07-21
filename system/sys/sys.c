@@ -144,13 +144,13 @@ void TIMER_0_INST_IRQHandler(void)
     // 左轮PID
     static pid left = {
         1,//kp
-        5,//ki
+        15,//ki
         1,//kd
         0,//last_err
         3200,//MAX
         3200,//MIN
         0,//ControlVelocity
-        0
+        0//
     };
 
     // 旋转PID
@@ -183,11 +183,11 @@ void TIMER_0_INST_IRQHandler(void)
                 // 获取左编码值
                 right.now_speed = left_encoder_value  = -Get_Encoder_Left();
                 // 获取右编码值
-                left.now_speed = right_encoder_value = Get_Encoder_Right();
+                left.now_speed = right_encoder_value = - Get_Encoder_Right();
                 // 运行PID
-                PID_run(left,right,turn,0,70);
+                mithon_run(&left,&right,&turn,0,50);
             }
-
+ 
             
             break;
 
