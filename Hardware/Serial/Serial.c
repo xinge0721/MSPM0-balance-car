@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // 定义接收数据变量
-uint8_t uart_data;
+int uart_data;
 
 //串口发送单个字符
 void uart0_send_char(char ch)
@@ -52,7 +52,8 @@ void UART_0_INST_IRQHandler(void)
     {
         case DL_UART_IIDX_RX://如果是接收中断
             //将发送过来的数据保存在变量中
-            uart_data = DL_UART_Main_receiveData(UART_0_INST);
+            
+            uart_data = (uint8_t)DL_UART_Main_receiveData(UART_0_INST) -90;
             //将保存的数据再发送出去
             uart0_send_char(uart_data);
             break;
@@ -61,3 +62,4 @@ void UART_0_INST_IRQHandler(void)
             break;
     }
 }
+

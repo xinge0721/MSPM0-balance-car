@@ -1,6 +1,6 @@
 #include "delay.h"
 
-// 定义一个全局变量，用来记录延时的时间。
+// 定义一个全局变量，用来记录延时的时间�?
 volatile unsigned int delay_times = 0;
 
 

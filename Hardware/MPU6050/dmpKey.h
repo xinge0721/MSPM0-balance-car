@@ -6,10 +6,6 @@
 #ifndef DMPKEY_H__
 #define DMPKEY_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define KEY_CFG_25                  (0)
 #define KEY_CFG_24                  (KEY_CFG_25 + 1)
 #define KEY_CFG_26                  (KEY_CFG_24 + 1)
@@ -495,8 +491,4 @@ typedef struct {
 
 
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif  /* DMPKEY_H__ */
+#endif // DMPKEY_H__

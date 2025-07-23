@@ -21,10 +21,6 @@
 #ifndef _INV_MPU_H_
 #define _INV_MPU_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #define INV_X_GYRO      (0x40)
 #define INV_Y_GYRO      (0x20)
 #define INV_Z_GYRO      (0x10)
@@ -126,10 +122,6 @@ int mpu_reg_dump(void);
 int mpu_read_reg(unsigned char reg, unsigned char *data);
 int mpu_run_self_test(long *gyro, long *accel);
 int mpu_register_tap_cb(void (*func)(unsigned char, unsigned char));
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif  /* #ifndef _INV_MPU_H_ */
 

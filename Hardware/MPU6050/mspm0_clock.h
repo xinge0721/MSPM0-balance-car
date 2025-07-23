@@ -1,17 +1,12 @@
-#ifndef MSPM0_CLOCK_H
-#define MSPM0_CLOCK_H
+#ifndef __MSPM0_CLOCK_H__
+#define __MSPM0_CLOCK_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-#include "../../system/sys/sys.h"
-#include "../../system/delay/delay.h"
+#include "ti_msp_dl_config.h"
 
 int mspm0_delay_ms(unsigned long num_ms);
 int mspm0_get_clock_ms(unsigned long *count);
+extern volatile unsigned long tick_ms;
+extern volatile uint32_t start_time;
 
-#ifdef __cplusplus
-}
+
 #endif
-
-#endif /* MSPM0_CLOCK_H */

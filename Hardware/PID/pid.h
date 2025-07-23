@@ -1,21 +1,18 @@
 #ifndef __PID_H
 #define __PID_H
-#include "../../system/sys/sys.h"
-#include "../Control/Control.h"
-// 定义PID结构体
+
+// 定义PID结构
 typedef struct pid
 {
 	float kp;
 	float ki;
 	float kd;
-	float last_err;
-	uint16_t MAX;
-	uint16_t MIN;
+	signed long long last_err;
     int ControlVelocity;
 	int now_speed;
 }pid;
 
-// 类似引用的宏定义，防呆
+// 类似引用的宏定义，防止重复定义
 // 参数一：左轮PID
 // 参数二：右轮PID
 // 参数三：转向PID
@@ -30,12 +27,13 @@ typedef struct pid
 int Turn_Pid(pid *pid,int now_position,float tar_position);
 
 /************
-增量式速度环
+增量式速度
 先加i消除误差，再加p消除静态误差
 *************/
 int FeedbackControl(pid *pid,int TargetVelocity, int CurrentVelocity);
 
 void mithon_run(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float i, float speed);
+void mithon_run_xunxian(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float angle, float speed);
 
 
 #endif

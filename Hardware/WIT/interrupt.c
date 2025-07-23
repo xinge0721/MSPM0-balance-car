@@ -5,14 +5,7 @@
 #include "wit.h"
 #include "system/delay/delay.h"
 
-// 滴答定时器中断服务函数
-void SysTick_Handler(void)
-{
-    if( delay_times != 0 )
-    {
-        delay_times--;
-    }
-}
+// 滴答定时器中断服务函�
 #if defined UART_BNO08X_INST_IRQHandler
 void UART_BNO08X_INST_IRQHandler(void)
 {
