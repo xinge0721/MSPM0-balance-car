@@ -10,7 +10,7 @@ int uart_data;
 void uart0_send_char(char ch)
 {
     //当串口0忙的时候等待，不忙的时候再发送传进来的字符
-    while( DL_UART_isBusy(UART_0_INST) == true );
+    while(DL_UART_isBusy(UART_0_INST) == true );
     //发送单个字符
     DL_UART_Main_transmitData(UART_0_INST, ch);
 }
@@ -55,7 +55,7 @@ void UART_0_INST_IRQHandler(void)
             
             uart_data = (uint8_t)DL_UART_Main_receiveData(UART_0_INST) -90;
             //将保存的数据再发送出去
-            uart0_send_char(uart_data);
+            // uart0_send_char(uart_data);
             break;
 
         default://其他的串口中断

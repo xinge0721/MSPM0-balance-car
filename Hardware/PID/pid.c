@@ -22,8 +22,8 @@ int Turn_Pid(pid *pid,int now_position,float tar_position)//当前脉冲，目�
 {
     float Err = tar_position - now_position;//目标脉冲-现在脉冲=误差脉冲
 	// 限幅
-		if(Err>180) {Err -= 180 * 2;}
-    else if(Err<-180) {Err += 180 *2;} 
+	if(Err>180) {Err -= 360;}
+    else if(Err<-180) {Err += 360;} 
     // 计算PWM
     float pwm = pid->kp*Err + pid->kd*(Err-pid->last_err);
     // 更新误差

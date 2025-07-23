@@ -4,15 +4,15 @@
 // 定义PID结构
 typedef struct pid
 {
-	float kp;
-	float ki;
-	float kd;
-	signed long long last_err;
-    int ControlVelocity;
-	int now_speed;
+	float kp; // 比例系数
+	float ki; // 积分系数
+	float kd; // 微分系数
+	signed long long last_err; // 上一次误差
+    int ControlVelocity; // 控制速度
+	int now_speed; // 当前速度
 }pid;
 
-// 类似引用的宏定义，防止重复定义
+// 类似引用的宏定义，防呆
 // 参数一：左轮PID
 // 参数二：右轮PID
 // 参数三：转向PID
