@@ -47,6 +47,8 @@
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/Control"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/wit"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/Servo"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Hardware/Tracking"/>
+                                    <listOptionValue value="${PROJECT_ROOT}/Hardware/SMS_STS"/>
                                     <listOptionValue value="${PROJECT_ROOT}/Hardware/HTS221"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE.328402769" superClass="com.ti.ccstudio.buildDefinitions.TMS470_TICLANG_4.0.compilerID.DEFINE" valueType="definedSymbols">
@@ -99,6 +101,9 @@
                             </tool>
                         </toolChain>
                     </folderInfo>
+                    <sourceEntries>
+                        <entry excluding="system/topic" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+                    </sourceEntries>
                 </configuration>
             </storageModule>
             <storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>

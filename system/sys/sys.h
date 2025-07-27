@@ -13,7 +13,9 @@
 #include "Hardware/MPU6050/mpu6050.h"
 #include "Hardware/APP/APP.h"   
 #include "wit.h"
-#include "Hardware/HCSR04/HCSR04.h"
+#include "Hardware/Tracking/Tracking.h"
+#include "Hardware/SMS_STS/SMS_STS.h"
+
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */
 typedef signed   char  int8_t;     /* 有符号8位整型 */

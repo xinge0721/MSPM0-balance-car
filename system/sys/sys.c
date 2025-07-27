@@ -8,8 +8,8 @@ float right_encoder_value = 0;
 // 初始化PID
 // 右轮PID
 pid right = {
-    0.1,//kp
-    15,//ki
+    0.5,//kp
+    2.5,//ki
     0,//kd
     0,//last_err
     0,//ControlVelocity
@@ -18,8 +18,8 @@ pid right = {
 
 // 左轮PID
 pid left = {
-    0.1,//kp
-    15,//ki
+    0.5,//kp
+    2.5,//ki
     0,//kd
     0,//last_err
     0,//ControlVelocity
@@ -28,10 +28,10 @@ pid left = {
 
 // 旋转PID
 pid turn = {
-    0.3,//kp
+    0.1,//kp
     0,//ki
     0,//kd
-    0,//last_err
+    0,//last_errs
     0,//ControlVelocity
     0
 };
@@ -132,35 +132,6 @@ void GROUP1_IRQHandler(void)
         }
         DL_GPIO_clearInterruptStatus(GPIOA, encoder_left_B_PIN);
     }
-
-    uint32_t gpiob_interrupt_status = DL_GPIO_getEnabledInterruptStatus(GPIOB, SR04_Echo_PIN);
-    if(gpiob_interrupt_status & SR04_Echo_PIN)
-    {
-        // SR04_ECHO() 宏用于读取ECHO引脚的当前电平
-        if( SR04_ECHO() ) // 如果是上升沿 (从低电平变为高电平)
-        {
-            // 只有在空闲状态下收到的第一个上升沿才是有效的计时开始信号
-            if (sr04_state == SR04_IDLE)
-            {
-                HCSR04_StartTime = Get_TIMER_Count();
-                sr04_state = SR04_WAIT_FALLING_EDGE; // 切换到等待下降沿状态
-            }
-        }
-        else // 如果是下降沿 (从高电平变为低电平)
-        {
-            // 只有在等待下降沿状态下收到的下降沿，才是有效的测量结束信号
-            if (sr04_state == SR04_WAIT_FALLING_EDGE)
-            {
-                uint32_t pulse_width_us = Get_TIMER_Count() - HCSR04_StartTime;
-                distance = (float)pulse_width_us / 58.0f;
-                
-                SR04_Flag = 1;   // 设置完成标志，告诉主程序可以读取距离
-                sr04_state = SR04_IDLE; // 测量完成，返回空闲状态
-                DL_GPIO_disableInterrupt(SR04_PORT, SR04_Echo_PIN); // 收到回波后立即关闭中断，防止重复触发
-            }
-        }
-        DL_GPIO_clearInterruptStatus(GPIOB, SR04_Echo_PIN);
-    }
 }
 
 
@@ -168,30 +139,29 @@ void GROUP1_IRQHandler(void)
 
 int LED_count;
 int PID_count;
-//定时器的中断服务函数 已配置为1秒的周期
+//定时器的中断服务函数 已配置为10ms的周期
 void TIMER_0_INST_IRQHandler(void)
 {
     //如果产生了定时器中断
-    switch( DL_TimerG_getPendingInterrupt(TIMER_0_INST) )//为了配合超声波模块，现在这个定时器是10ms一
+    switch( DL_TimerG_getPendingInterrupt(TIMER_0_INST) )//为了配合超声波模块，现在这个定时器是10ms一中断
     {
         case DL_TIMER_IIDX_ZERO://如果0溢出中断
-            msHcCount++;
             LED_count ++;
 
-            if( LED_count % 10 == 0)//10ms中断一
+            if( LED_count % 10 == 0)//100ms中断一次
             {
                 //将LED灯的状态翻转，确认单片机没有卡
                 DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
             }
-                // 获取左编码器
-                right.now_speed = right_encoder_value  = -Get_Encoder_Right();
-                // 获取右编码器
-                left.now_speed  = left_encoder_value   = -Get_Encoder_Left();
+            TrackingStatus tracking_status = xunji();
 
-                PID_run_xunxian(left,right,turn,uart_data,50);
-                // Control_speed(2000,2000);
-                // Servo_Tick_Handler();
- 
+            // 获取左编码器
+            right.now_speed = right_encoder_value  = -Get_Encoder_Right();
+            // 获取右编码器
+            left.now_speed  = left_encoder_value   = -Get_Encoder_Left();
+
+            PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
+            
             break;
 
         default://其他的定时器中断
@@ -202,7 +172,7 @@ void TIMER_0_INST_IRQHandler(void)
 // 滴答定时器中断服务函数
 void SysTick_Handler(void)
 {
-    
+    SMS_STS_Timeout_Handler();
     tick_ms++;
     if( delay_times != 0 )
     {

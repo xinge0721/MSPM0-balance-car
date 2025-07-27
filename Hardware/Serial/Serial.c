@@ -2,7 +2,9 @@
 #include "ti_msp_dl_config.h"
 #include <stdarg.h>
 #include <stdio.h>
+#include "Hardware/SMS_STS/SMS_STS.h"
 
+int uart_arr[8] = {0};
 // 定义接收数据变量
 int uart_data;
 
@@ -43,7 +45,8 @@ void uart0_printf(const char *format, ...)
     
     uart0_send_string(buffer);
 }
-
+volatile int comtaaa = 0;
+volatile int iiiii = 0;
 //串口的中断服务函数
 void UART_0_INST_IRQHandler(void)
 {
@@ -52,10 +55,19 @@ void UART_0_INST_IRQHandler(void)
     {
         case DL_UART_IIDX_RX://如果是接收中断
             //将发送过来的数据保存在变量中
-            
-            uart_data = (uint8_t)DL_UART_Main_receiveData(UART_0_INST) -90;
-            //将保存的数据再发送出去
-            // uart0_send_char(uart_data);
+            uart_data = (uint8_t)DL_UART_Main_receiveData(UART_0_INST);
+
+            // 调用舵机协议处理函数
+            SMS_STS_Receive(uart_data);
+
+            // 下面的代码用于在OLED上显示原始报文，可保留用于调试
+            uart_arr[comtaaa ++] = uart_data;
+            iiiii++;
+            if(comtaaa >= 8) // 使用 >= 防止意外越界
+            {
+                comtaaa = 0;
+            }
+        
             break;
 
         default://其他的串口中断

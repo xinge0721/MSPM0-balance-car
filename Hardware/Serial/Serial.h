@@ -5,6 +5,9 @@
 
 // 定义接收数据变量
 extern int uart_data;
+extern int uart_arr[8] ;
+extern volatile int comtaaa;
+extern volatile int iiiii;
 
 void uart0_send_char(char ch);
 void uart0_send_string(char* str);
