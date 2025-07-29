@@ -4,63 +4,108 @@
 #include "Servo.h"
 
 
+unsigned int Servo1_Angle = 0;//舵机1角度
+unsigned int Servo2_Angle = 0;//舵机2角度
 
-// 舵机连接�? PA4
-#define SERVO_PIN   GPIO_Servo_PORT
-#define SERVO_PORT  GPIO_Servo_PIN_15_PIN
+/******************************************************************
+   配置占空比 范围 0 ~ (per-1)
+   对于270度舵机:
+   t = 0.5ms-------------------舵机会转动 0 °
+   t = 1.0ms-------------------舵机会转动 67.5°
+   t = 1.5ms-------------------舵机会转动 135°
+   t = 2.0ms-------------------舵机会转动 202.5°
+   t = 2.5ms-------------------舵机会转动 270°
+******************************************************************/
 
-// 脉冲宽度范围: 500-2500us (对应0.5-2.5ms)
-#define SERVO_MIN_PULSE 500
-#define SERVO_MAX_PULSE 2500
+/******************************************************************
+ * 函 数 名 称：Set_Servo1_Angle
+ * 函 数 说 明：设置舵机1的角度
+ * 函 数 形 参：angle=要设置的角度，范围SERVO1_MIN_ANGLE到SERVO1_MAX_ANGLE
+ * 函 数 返 回：无
 
-// 全局变量，用于在中断中确定脉冲宽�?(单位: us)
-int servo_pulse_us = 1667; 
-
-// 中间位置脉冲宽度
-#define SERVO_MIDDLE_PULSE 1667 
-
-// 直接设置脉冲宽度(us)
-// 舵机脉宽范围: 500us ~ 2500us 对应 0~180�?
-void Servo_SetPulse(int Pulse_us)
+******************************************************************/
+void Set_Servo1_Angle(unsigned int angle)
 {
-    if (Pulse_us < SERVO_MIN_PULSE) Pulse_us = SERVO_MIN_PULSE;
-    if (Pulse_us > SERVO_MAX_PULSE) Pulse_us = SERVO_MAX_PULSE;
-    
-    servo_pulse_us = Pulse_us;
-}
+    uint32_t period = 400;
 
-// 使用角度设置舵机位置 (角度范围: 0~180�?)
-void Servo_SetAngle_Int16(int16_t angle)
-{
-    // 限制角度范围
-    if (angle < 0) angle = 0;
-    if (angle > 180) angle = 180;
-    
-    // 角度转换为脉冲宽�?
-    // 脉冲宽度(μs) = 500 + 角度 × 11.11
-    int pulse = SERVO_MIN_PULSE + (int)((float)angle * 11.11f);
-    
-    // 设置脉冲宽度
-    Servo_SetPulse(pulse);
-}
-
-
-
-// 此函数需要被 SysTick_Handler �?20ms的频率调�?
-void Servo_Tick_Handler(void)
-{
-    static int tick_counter = 0;
-    for(int i=0;i<2500;i++)
+    // 限制角度在设定范围内
+    if(angle < SERVO1_MIN_ANGLE)
     {
-        if(i <= servo_pulse_us)
-        {
-            DL_GPIO_setPins(SERVO_PIN,SERVO_PORT);
-        }
-        else
-        {
-            DL_GPIO_clearPins(SERVO_PIN,SERVO_PORT);
-        }
-        delay_1us(1);
+        angle = SERVO1_MIN_ANGLE;
     }
-} 
+    else if(angle > SERVO1_MAX_ANGLE)
+    {
+        angle = SERVO1_MAX_ANGLE;
+    }
+
+    Servo1_Angle = angle;
+
+    // 计算PWM占空比
+    // 0.5ms对应的计数 = 10
+    // 2.5ms对应的计数 = 50
+    float min_count = 10.0f;
+    float max_count = 50.0f;
+    float range = max_count - min_count;
+    float ServoAngle = min_count + (((float)angle / SERVO_MAX_ANGLE) * range);
+
+    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, (unsigned int)(ServoAngle + 0.5f), GPIO_PWM_SG90_C0_IDX);
+}
+
+/******************************************************************
+ * 函 数 名 称：Set_Servo2_Angle
+ * 函 数 说 明：设置舵机2的角度
+ * 函 数 形 参：angle=要设置的角度，范围SERVO2_MIN_ANGLE到SERVO2_MAX_ANGLE
+ * 函 数 返 回：无
+
+******************************************************************/
+void Set_Servo2_Angle(unsigned int angle)
+{
+    uint32_t period = 400;
+
+    // 限制角度在设定范围内
+    if(angle < SERVO2_MIN_ANGLE)
+    {
+        angle = SERVO2_MIN_ANGLE;
+    }
+    else if(angle > SERVO2_MAX_ANGLE)
+    {
+        angle = SERVO2_MAX_ANGLE;
+    }
+
+    Servo2_Angle = angle;
+
+    // 计算PWM占空比
+    // 0.5ms对应的计数 = 10
+    // 2.5ms对应的计数 = 50
+    float min_count = 10.0f;
+    float max_count = 50.0f;
+    float range = max_count - min_count;
+    float ServoAngle = min_count + (((float)angle / SERVO_MAX_ANGLE) * range);
+
+    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, (unsigned int)(ServoAngle + 0.5f), GPIO_PWM_SG90_C1_IDX); // 使用第二个通道C1
+}
+
+/******************************************************************
+ * 函 数 名 称：Get_Servo1_Angle
+ * 函 数 说 明：读取舵机1当前角度
+ * 函 数 形 参：无
+ * 函 数 返 回：当前角度
+******************************************************************/
+unsigned int Get_Servo1_Angle(void)
+{
+    return Servo1_Angle;
+}
+
+/******************************************************************
+ * 函 数 名 称：Get_Servo2_Angle
+ * 函 数 说 明：读取舵机2当前角度
+ * 函 数 形 参：无
+ * 函 数 返 回：当前角度
+******************************************************************/
+unsigned int Get_Servo2_Angle(void)
+{
+    return Servo2_Angle;
+}
+
+
 

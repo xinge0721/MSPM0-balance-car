@@ -8,6 +8,14 @@ int uart_arr[8] = {0};
 // 定义接收数据变量
 int uart_data;
 
+void BT_SendString(char*str)
+{
+    while(*str != '\0')
+    {
+        DL_UART_Main_transmitDataBlocking(UART_1_INST,*str++);
+    }
+}
+
 //串口发送单个字符
 void uart0_send_char(char ch)
 {
@@ -74,4 +82,5 @@ void UART_0_INST_IRQHandler(void)
             break;
     }
 }
+
 

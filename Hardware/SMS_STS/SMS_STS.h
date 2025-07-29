@@ -4,6 +4,7 @@
 #include "system/sys/sys.h"
 
 #define SMS_STS_MAX_SERVOS 4 // 支持的最大舵机数量
+#define SMS_STS_DIRECTION_BIT 32768 // 方向位标志，用于表示负方向
 
 // 错误代码定义
 typedef enum {
@@ -185,14 +186,167 @@ SMS_STS_Error_t SMS_STS_Set_Speed(uint8_t ID, int16_t Speed);
  ****************************************************************/
 void SMS_STS_Timeout_Handler(void);
 
+/****************************************************************
+ * 函数名称: SMS_STS_Position_To_Angle
+ * 函数功能: 将舵机位置值(0-4095)转换为角度(0-360度)
+ * 输入参数: 
+ *     Position - 位置值(0-4095)
+ * 返回值: 
+ *     float - 对应的角度值(0-360度)
+ * 使用说明: 
+ *     此函数对位置值取余，确保角度始终在0-360度范围内
+ ****************************************************************/
+float SMS_STS_Position_To_Angle(uint16_t Position);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Position_To_Angle_Multi
+ * 函数功能: 将多圈位置值转换为多圈角度
+ * 输入参数: 
+ *     Position - 多圈位置值(可大于4095)
+ * 返回值: 
+ *     float - 对应的多圈角度值
+ * 使用说明: 
+ *     此函数不对位置取余，支持多圈角度计算
+ ****************************************************************/
+float SMS_STS_Position_To_Angle_Multi(uint32_t Position);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Angle_To_Position
+ * 函数功能: 将角度值(0-360度)转换为舵机位置值(0-4095)
+ * 输入参数: 
+ *     Angle - 角度值(0-360度)
+ * 返回值: 
+ *     uint16_t - 对应的位置值(0-4095)
+ * 使用说明: 
+ *     此函数对角度取余，确保位置值始终在0-4095范围内
+ ****************************************************************/
+uint16_t SMS_STS_Angle_To_Position(float Angle);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Angle_To_Position_Multi
+ * 函数功能: 将多圈角度值转换为多圈位置值
+ * 输入参数: 
+ *     Angle - 多圈角度值(可大于360度)
+ * 返回值: 
+ *     uint32_t - 对应的多圈位置值
+ * 使用说明: 
+ *     此函数不对角度取余，支持多圈位置计算
+ ****************************************************************/
+uint32_t SMS_STS_Angle_To_Position_Multi(float Angle);
+
 // 舵机数据结构体
 typedef struct
 {
-    uint8_t ID;        // 舵机ID号
-    uint16_t Position; // 舵机当前位置
+    uint8_t ID;                // 舵机ID号
+    uint16_t Position;         // 舵机当前位置(原始值)
+    int8_t Direction;          // 方向: 1=正方向，-1=负方向
+    uint16_t ActualPosition;   // 实际位置值(去除方向位)
+    float Angle;               // 计算得到的实际角度值(带方向)
+    float MultiTurnAngle;      // 多圈角度值(使用Position_To_Angle_Multi计算)
 } SMS_STS_Data_t;
 
 // 导出全局舵机数据数组
 extern SMS_STS_Data_t STS_Data[SMS_STS_MAX_SERVOS + 1];
+
+// 舵机控制状态结构体
+typedef struct {
+    uint8_t id;          // 舵机ID
+    float angle;		//角度做任务
+} MotorStatus;
+
+// 导出全局舵机状态数组
+extern MotorStatus motor_status[SMS_STS_MAX_SERVOS + 1];
+
+/****************************************************************
+ * 函数名称: SMS_STS_Set_Angle_With_Direction
+ * 函数功能: 带方向控制的角度设置函数
+ * 输入参数: 
+ *     ID - 舵机ID号(1-4)
+ *     Angle - 目标角度，单位为度，范围(-2700.0到+2700.0)
+ *             正数表示正方向，负数表示反方向
+ *     RunTime - 运行时间(0-65535)，单位为毫秒
+ *     Speed - 运行速度(0-65535)，0表示使用默认值
+ * 返回值: 
+ *     SMS_STS_OK - 操作成功
+ *     SMS_STS_ERR_PARAM - 参数错误(ID无效或角度超范围)
+ *     SMS_STS_ERR_BUSY - 总线忙，无法发送
+ * 使用说明: 
+ *     1. 该函数专门处理带正负号的角度控制
+ *     2. 负角度会被转换为正位置值+方向位
+ *     3. 支持多圈转动，范围为SMS_STS_MIN_ANGLE到SMS_STS_MAX_ANGLE
+ ****************************************************************/
+SMS_STS_Error_t SMS_STS_Set_Angle_With_Direction(uint8_t ID, float Angle, uint16_t RunTime, uint16_t Speed);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Process_SyncRead_Byte
+ * 函数功能: 逐字节处理同步读取响应数据
+ * 输入参数: 
+ *     data - 接收到的一个字节数据
+ * 返回值: 无
+ * 使用说明: 
+ *     1. 该函数在串口接收中断中调用
+ *     2. 每收到一个同步读取响应字节调用一次
+ *     3. 内部维护状态机自动处理数据包的识别和解析
+ *     4. 解析成功后会更新对应舵机的位置信息
+ ****************************************************************/
+void SMS_STS_Process_SyncRead_Byte(uint8_t data);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Receive_Enhanced
+ * 函数功能: 增强版接收函数，能处理普通响应和同步读取响应
+ * 输入参数: 
+ *     data - 串口接收到的一个字节数据
+ * 返回值: 无
+ * 使用说明: 
+ *     1. 该函数应放置在串口接收中断中调用
+ *     2. 每收到一个字节就调用一次该函数
+ *     3. 自动判断并处理不同类型的响应数据
+ ****************************************************************/
+void SMS_STS_Receive_Enhanced(uint8_t data);
+
+// 同步读指令相关函数声明
+SMS_STS_Error_t SMS_STS_SyncRead(uint8_t *id_list, uint8_t id_count, uint8_t reg_addr, uint8_t reg_length);
+SMS_STS_Error_t SMS_STS_SyncRead_Fixed(void);
+void SMS_STS_Process_SyncRead_Response(uint8_t *data, uint16_t length);
+void SMS_STS_SyncRead_Example(void);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Control
+ * 函数功能: 设置舵机目标角度(简化版)
+ * 输入参数: 
+ *     id - 舵机ID号(1-4)
+ *     angle - 目标角度，单位为度，范围(-2700.0到+2700.0)
+ * 返回值: 无
+ * 使用说明:
+ *     1. 简化版控制函数，只需设置目标角度
+ *     2. 实际的舵机控制会在定时器中轮询执行
+ ****************************************************************/
+void SMS_STS_Control(uint8_t id, float angle);
+
+/****************************************************************
+ * 函数名称: SMS_STS_Poll_Handler
+ * 函数功能: 轮询处理舵机控制请求
+ * 输入参数: 无
+ * 返回值: 无
+ * 使用说明:
+ *     1. 在定时器中断中调用此函数
+ *     2. 每次调用处理一个舵机的控制和读取
+ ****************************************************************/
+void SMS_STS_Poll_Handler(void);
+
+// 添加control函数声明
+void control(uint8_t id, float angle);
+
+/****************************************************************
+ * 函数名称: Update_Servos
+ * 函数功能: 更新所有舵机的状态，包括设置角度和请求位置
+ * 输入参数: 无
+ * 返回值: 无
+ * 使用说明:
+ *     1. 在主循环中调用此函数
+ *     2. 该函数会根据 motor_status 数组中的目标角度来驱动舵机
+ *     3. 驱动后会立即发送读取指令以获取舵机的最新位置
+ ****************************************************************/
+void Update_Servos(void);
 
 #endif

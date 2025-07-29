@@ -14,5 +14,7 @@ void uart0_send_string(char* str);
 void uart0_SendArray(uint8_t* data, uint8_t length);
 void uart0_printf(const char *format, ...);
 
+void BT_SendString(char*str);
+
 #endif
 

@@ -10,11 +10,12 @@
 #include "Hardware/Serial/Serial.h"
 #include "Hardware/PID/pid.h"
 #include "Hardware/Control/Control.h"
-#include "Hardware/MPU6050/mpu6050.h"
+//#include "Hardware/MPU6050/mpu6050.h"
 #include "Hardware/APP/APP.h"   
 #include "wit.h"
 #include "Hardware/Tracking/Tracking.h"
 #include "Hardware/SMS_STS/SMS_STS.h"
+#include "gray.h"
 
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */
@@ -47,10 +48,10 @@ extern float left_encoder_value;
 // 右编码器��?
 extern float right_encoder_value;
 
-// 右轮PID
-extern pid right;
-// 左轮PID
-extern pid left;
-// 旋转PID
-extern pid turn;
+// // 右轮PID
+// extern pid right;
+// // 左轮PID
+// extern pid left;
+// // 旋转PID
+// extern pid turn;
 #endif /* __SYS_H */ 

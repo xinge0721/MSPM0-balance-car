@@ -8,9 +8,17 @@ typedef struct pid
 	float ki; // 积分系数
 	float kd; // 微分系数
 	signed long long last_err; // 上一次误差
+	signed long long last_last_err; // 上一次误差
     int ControlVelocity; // 控制速度
 	int now_speed; // 当前速度
 }pid;
+
+// 右轮PID
+extern pid right;
+// 左轮PID
+extern pid left;
+// 旋转PID
+extern pid turn;
 
 // 类似引用的宏定义，防呆
 // 参数一：左轮PID
@@ -19,6 +27,7 @@ typedef struct pid
 // 参数四：i
 // 参数五：速度
 #define PID_run(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
+
 #define PID_run_xunxian(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run_xunxian(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
 
 /************
@@ -32,8 +41,12 @@ int Turn_Pid(pid *pid,int now_position,float tar_position);
 *************/
 int FeedbackControl(pid *pid,int TargetVelocity, int CurrentVelocity);
 
-void mithon_run(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float i, float speed);
+void mithon_run_yew(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float t_yew, float speed);
+
 void mithon_run_xunxian(pid *pid_speed_left, pid *pid_speed_right,pid *pid_turn_right, float angle, float speed);
+
+void stopcar(void);//刹车
+
 
 
 #endif

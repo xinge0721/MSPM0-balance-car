@@ -7,6 +7,7 @@
         "encoder.h": "c",
         "delay.h": "c",
         "sys.h": "c",
-        "tracking.h": "c"
+        "tracking.h": "c",
+        "sms_sts.h": "c"
     }
 }

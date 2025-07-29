@@ -13,6 +13,6 @@
 	<activeTargetConfiguration value="targetConfigs/MSPM0G3507.ccxml"/>
 	<isTargetConfigurationManual value="false"/>
 	<sourceLookupPath value="${COM_TI_MSPM0_SDK_INSTALL_DIR}/source/ti/driverlib"/>
-	<origin value="C:\TI\mspm0_sdk_2_04_00_06\examples\nortos\LP_MSPM0G3507\driverlib\empty_cpp\ticlang\empty_cpp_LP_MSPM0G3507_nortos_ticlang.projectspec"/>
+	<origin value="C:/Users/Think/Desktop/保存工程/ti_car"/>
 	<filesToOpen value="README.md,empty_cpp.syscfg"/>
 </projectOptions>

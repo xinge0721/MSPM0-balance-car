@@ -39,3 +39,26 @@ int Get_Encoder_Right(void)
     // 返回存储的计数值
     return temp;
 }
+
+// 里程计算变量
+uint32_t total_distance = 0;       // 总行驶距离(米)
+uint32_t cur_left = 0;      // 上次左轮计数
+uint32_t cur_right = 0;     // 上次右轮计数
+// 里程计算函数（在定时器中断或主循环中调用）
+int update_mileage(void)
+{
+    // 临时禁用中断防止读取时被修改
+    cur_left += left_encoder_value;
+    cur_right+= right_encoder_value;
+    // 4. 计算平均增量（双轮平均更准确）
+    uint32_t total = ((cur_left + cur_right)/2)*0.01*WHEEL_CIRCUMFERENCE;
+    
+    return total;
+}
+
+void clear_mileage(void)
+{
+    total_distance = 0;       // 总行驶距离(米)
+    cur_left = 0;      // 上次左轮计数
+    cur_right = 0;     // 上次右轮计数
+}
