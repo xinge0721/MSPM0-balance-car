@@ -110,6 +110,7 @@ void GROUP1_IRQHandler(void)
 uint8_t LED_count;
 uint8_t go_flag=0;
 float target_angle = 0.0f; // 定义一个目标角度变量
+
 //定时器的中断服务函数 已配置为10ms的周期
 void TIMER_0_INST_IRQHandler(void)
 {
@@ -148,101 +149,8 @@ void TIMER_0_INST_IRQHandler(void)
             
             if(go_flag ==1)// 巡线
             {
-                left.ki=48.0; left.kp=0.0; left.kd=0.0;//left.ki=110.0; left.kp=75.0; left.kd=8.0;
-                right.ki=48.0; right.kp=0.0; right.kd=0.0;
-                turn.kp=0.46; turn.kd=0.0;
-                //total_distance = update_mileage();//里程
-                mithon_run_yew(&left,&right,&turn,0,0);
-                // turn_err_k = process_sensors();//循迹差
-                // mithon_run_xunxian(&left,&right,&turn,turn_err_k,80);//85
-                // if(total_distance==20)
-                // {
-                //     go_flag=9;
-                //     clear_mileage();//清空里程
-                // }
+                Topic_1();
             }
-            if(go_flag==2)// 转弯1
-            {
-                left.ki=20; left.kp=0.5;
-                right.ki=20; right.kp=0.5;
-                turn.kp=0.6; turn.kd=0.0;
-                total_distance = update_mileage();
-                mithon_run_yew(&left,&right,&turn,105,85);
-                //mithon_run_gray(&left,&right,&turn,turn_err_k,85);//85
-                if(total_distance==13)
-                {
-                    go_flag=3;
-                    clear_mileage();
-                }
-            }
-            if(go_flag==3)// 转弯2
-            {
-                left.ki=20; left.kp=0.5;
-                right.ki=20; right.kp=0.5;
-                turn.kp=0.66; turn.kd=0.0;
-                total_distance = update_mileage();
-                mithon_run_yew(&left,&right,&turn,-176,85);
-                //mithon_run_gray(&left,&right,&turn,turn_err_k,85);//85
-                if(total_distance==10)
-                {
-                    go_flag=4;
-                    clear_mileage();
-                }
-            }
-            if(go_flag ==4)// 巡线
-            {
-                left.ki=20; left.kp=0.5;
-                right.ki=20; right.kp=0.5;
-                turn.kp=0.63; turn.kd=0.0;
-                total_distance = update_mileage();//里程
-                //mithon_run_yaw(&left,&right,&turn,0,65);
-                turn_err_k = process_sensors();//循迹差
-                mithon_run_xunxian(&left,&right,&turn,turn_err_k,80);//85
-                if(total_distance==22)
-                {
-                    go_flag=9;
-                    clear_mileage();//清空里程
-                }
-            }
-            // if(go_flag==5)// 转弯1
-            // {
-            //     left.ki=20; left.kp=0.5;
-            //     right.ki=20; right.kp=0.5;
-            //     turn.kp=0.6; turn.kd=0.0;
-            //     total_distance = update_mileage();
-            //     mithon_run_yaw(&left,&right,&turn,85);
-            //     //mithon_run_gray(&left,&right,&turn,turn_err_k,85);//85
-            //     if(total_distance==13)
-            //     {
-            //         go_flag=3;
-            //         clear_mileage();
-            //     }
-            // }
-            // if(go_flag==6)// 转弯2
-            // {
-            //     left.ki=20; left.kp=0.5;
-            //     right.ki=20; right.kp=0.5;
-            //     turn.kp=0.68; turn.kd=0.0;
-            //     total_distance = update_mileage();
-            //     mithon_run_yaw(&left,&right,&turn,-171,85);
-            //     //mithon_run_gray(&left,&right,&turn,turn_err_k,85);//85
-            //     if(total_distance==9)
-            //     {
-            //         go_flag=9;
-            //         clear_mileage();
-            //     }
-            // }
-            if(go_flag==9)
-            {
-                stopcar();//停车
-            }
-
-            // PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
-            // PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
-            // PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
-            // PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
-            // PID_run_xunxian(left,right,turn,tracking_status.deviation,20);
-
             break;
 
         default://其他的定时器中断
@@ -259,5 +167,5 @@ void SysTick_Handler(void)
     {
         delay_times--;
     }
-}
+}  
 
