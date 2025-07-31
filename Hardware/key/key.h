@@ -11,8 +11,7 @@
 
 void key_init(void);
 
-
-
-
+void relay_off(void);
+void relay_on(void);
 
 #endif

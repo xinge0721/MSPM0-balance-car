@@ -124,20 +124,7 @@ static uint8_t sync_rx_last_byte = 0;             // 记录上一个接收字节
  ****************************************************************/
 void SMS_STS_Init(void)
 {
-    // 初始化舵机数据结构
-    for (int i = 0; i <= SMS_STS_MAX_SERVOS; i++) {
-        STS_Data[i].ID = i;
-        STS_Data[i].Position = 0;
-        STS_Data[i].Direction = 1;       // 默认为正方向
-        STS_Data[i].ActualPosition = 0;  // 初始位置为0
-        STS_Data[i].Angle = 0.0f;        // 初始角度为0
-        STS_Data[i].MultiTurnAngle = 0.0f; // 初始多圈角度为0
-    }
-    
-    // 确保标志位初始化为空闲状态
-    SMS_STS_Read_Flag = 0;
-    SMS_STS_Timeout_Counter = 0;
-    
+        
     // 初始化舵机角度为180度，防止开机乱转
     // 预定义的数据包，设置舵机的当前角度为180度
     uint8_t buff1[8] = {0xFF, 0xFF, 0x01, 0x04, 0x03, 0x28, 0x80, 0x4F};
@@ -159,6 +146,8 @@ void SMS_STS_Init(void)
     
     // 等待500ms让舵机完成初始化
     delay_ms(500);
+    delay_ms(500);
+
 }
 
 /****************************************************************
@@ -337,11 +326,8 @@ SMS_STS_Error_t SMS_STS_Set_Angle(uint8_t ID, float Angle, uint16_t RunTime, uin
         return SMS_STS_ERR_PARAM;
     }
     
-    // 角度转换为位置值
-    uint16_t Position = (uint16_t)(Angle * 11.375f);
-    
     // 调用原有的运行函数
-    return SMS_STS_Run(ID, Position, RunTime, Speed);
+    return SMS_STS_Run(ID, Angle, RunTime, Speed);
 }
 
 /****************************************************************
@@ -1263,8 +1249,6 @@ void SMS_STS_Receive_Enhanced(uint8_t data)
 // 将MotorStatus的定义和motor_status数组的声明移到.h文件
 MotorStatus motor_status[SMS_STS_MAX_SERVOS + 1];
 
-
-
 /*控制舵机角度
 函数参数:id号,控制角度
 */
@@ -1287,8 +1271,8 @@ void control(uint8_t id,float angle)
 void Update_Servos(void)
 {
     // 1. 根据 motor_status 中的目标角度，驱动舵机1和2转动
-    SMS_STS_Set_Angle(1, motor_status[1].angle, 0, 0); 
-    SMS_STS_Set_Angle(2, motor_status[2].angle, 0, 0);
+    //SMS_STS_Set_Angle(1, motor_status[1].angle, 0, 0); 
+    //SMS_STS_Set_Angle(2, motor_status[2].angle, 0, 0);
     
     // 2. 发送指令读取舵机1的位置
     SMS_STS_Read(1);

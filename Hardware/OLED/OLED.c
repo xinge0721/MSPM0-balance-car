@@ -236,12 +236,12 @@ void OLED_ShowFloatNum(uint8_t Line, uint8_t Column, float Number, uint8_t IntLe
 	}
 	
 	integerPart = (uint32_t)Number;
-	fractionalPart = (uint32_t)(((Number - integerPart) * 100) + 0.5);
+	fractionalPart = (uint32_t)(((Number - integerPart) * 10000) + 0.5);
 	
-	if (fractionalPart >= 100)
+	if (fractionalPart >= 10000)
 	{
 		integerPart++;
-		fractionalPart -= 100;
+		fractionalPart -= 10000;
 	}
 	
 	for (i = 0; i < IntLength; i++)
@@ -251,8 +251,10 @@ void OLED_ShowFloatNum(uint8_t Line, uint8_t Column, float Number, uint8_t IntLe
 	
 	OLED_ShowChar(Line, Column + 1 + IntLength, '.');
 	
-	OLED_ShowChar(Line, Column + 2 + IntLength, fractionalPart / 10 + '0');
-	OLED_ShowChar(Line, Column + 3 + IntLength, fractionalPart % 10 + '0');
+	OLED_ShowChar(Line, Column + 2 + IntLength, fractionalPart / 1000 + '0');
+	OLED_ShowChar(Line, Column + 3 + IntLength, fractionalPart / 100 % 10 + '0');
+	OLED_ShowChar(Line, Column + 4 + IntLength, fractionalPart / 10 % 10 + '0');
+	OLED_ShowChar(Line, Column + 5 + IntLength, fractionalPart % 10 + '0');
 }
 
 /**

@@ -8,8 +8,6 @@
         "delay.h": "c",
         "sys.h": "c",
         "tracking.h": "c",
-        "sms_sts.h": "c",
-        "uart1.h": "c",
-        "interrupt.h": "c"
+        "sms_sts.h": "c"
     }
 }

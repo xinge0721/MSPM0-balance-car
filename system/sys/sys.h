@@ -3,7 +3,6 @@
 #include "ti_msp_dl_config.h"
 #include <math.h>
 #include <stdio.h>
-#include "Hardware/Servo/Servo.h"
 #include "system/delay/delay.h"
 #include "Hardware/Encoder/Encoder.h"
 #include "Hardware/OLED/OLED.h"
@@ -16,8 +15,11 @@
 #include "Hardware/Tracking/Tracking.h"
 #include "Hardware/SMS_STS/SMS_STS.h"
 #include "gray.h"
-#include "Hardware/UART1/UART1.h"
 #include "Hardware/WIT/interrupt.h"
+#include "Hardware/OLED/OLED.h"
+#include "Hardware/Servo/Servo.h"
+#include "system/topic/topic.h"
+#include "Hardware/Servo/Servo.h"
 
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */

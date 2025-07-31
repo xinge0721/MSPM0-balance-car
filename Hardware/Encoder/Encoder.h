@@ -5,6 +5,7 @@
 #include "system/sys/sys.h"
 
 // 轮子参数（根据实际测量修改）
+#define SIDE_DIAMETER  10     // 一条边的里程
 #define WHEEL_DIAMETER  0.068f     // 轮子直径(米) 示例：65mm
 #define WHEEL_CIRCUMFERENCE (3.1415926f * WHEEL_DIAMETER)  // 轮子周长
 extern uint32_t total_distance;

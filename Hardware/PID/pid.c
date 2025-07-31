@@ -120,7 +120,7 @@ typedef struct {
 }wei_pid;
 
 wei_pid wei_pid_left = {0,0,3.5,0,0};
-wei_pid wei_pid_right = {0,0,2,0,0};
+wei_pid wei_pid_right = {0,0,2.2,0,0};
 
 //位置式pid位置控制
 //左
@@ -161,6 +161,7 @@ void mithon_run_pid(int pid_speed_left, int pid_speed_right, int now_position)
 
 	Control_speed(-Lpwm,Rpwm);
 }
+
 // 清空位置环累计脉冲
 void mithon_run_pid_clear(void)
 {
@@ -183,8 +184,8 @@ struct PID_TypeDef
 	float	Last_Bias;
 };
 
-struct PID_TypeDef PID_jiguang = {2.5,0,15,0,0,0};
-struct PID_TypeDef PID_shexiantou = {2.5,0,15,0,0,0};
+struct PID_TypeDef PID_jiguang = {2.5,0,0,0,0,0};
+struct PID_TypeDef PID_shexiantou = {2.5,0,0,0,0,0};
 //struct PID_TypeDef PID_shexiantou = {2.5,0,15,0,0,0};
 /*************************************************************************
 函数功能：位置式PID控制器
