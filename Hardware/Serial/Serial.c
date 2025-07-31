@@ -67,7 +67,7 @@ void UART_0_INST_IRQHandler(void)
 
             // 调用舵机协议处理函数
             SMS_STS_Receive(uart_data);
-
+            uart0_send_char(uart_data);
             // 下面的代码用于在OLED上显示原始报文，可保留用于调试
             uart_arr[comtaaa ++] = uart_data;
             iiiii++;

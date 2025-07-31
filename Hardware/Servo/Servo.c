@@ -4,92 +4,61 @@
 #include "Servo.h"
 
 
-unsigned int Servo1_Angle = 0;//舵机1角度
-unsigned int Servo2_Angle = 0;//舵机2角度
+unsigned int Servo1_Angle = 0;//舵机1PWM值(原angle变量)
+unsigned int Servo2_Angle = 0;//舵机2PWM值(原angle变量)
 
 /******************************************************************
-   配置占空比 范围 0 ~ (per-1)
-   对于270度舵机:
-   t = 0.5ms-------------------舵机会转动 0 °
-   t = 1.0ms-------------------舵机会转动 67.5°
-   t = 1.5ms-------------------舵机会转动 135°
-   t = 2.0ms-------------------舵机会转动 202.5°
-   t = 2.5ms-------------------舵机会转动 270°
+   配置占空比 范围 0 ~ 400
+   直接设置PWM占空比值，无需角度映射
 ******************************************************************/
 
 /******************************************************************
  * 函 数 名 称：Set_Servo1_Angle
- * 函 数 说 明：设置舵机1的角度
- * 函 数 形 参：angle=要设置的角度，范围SERVO1_MIN_ANGLE到SERVO1_MAX_ANGLE
+ * 函 数 说 明：设置舵机1的PWM值
+ * 函 数 形 参：angle=要设置的PWM值，范围0到400
  * 函 数 返 回：无
 
 ******************************************************************/
 void Set_Servo1_Angle(unsigned int angle)
 {
-    uint32_t period = 400;
-
-    // 限制角度在设定范围内
-    if(angle < SERVO1_MIN_ANGLE)
+    // 限制PWM值在设定范围内
+    if(angle > 400)
     {
-        angle = SERVO1_MIN_ANGLE;
-    }
-    else if(angle > SERVO1_MAX_ANGLE)
-    {
-        angle = SERVO1_MAX_ANGLE;
+        angle = 400;
     }
 
     Servo1_Angle = angle;
 
-    // 计算PWM占空比
-    // 0.5ms对应的计数 = 10
-    // 2.5ms对应的计数 = 50
-    float min_count = 10.0f;
-    float max_count = 50.0f;
-    float range = max_count - min_count;
-    float ServoAngle = min_count + (((float)angle / SERVO_MAX_ANGLE) * range);
-
-    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, (unsigned int)(ServoAngle + 0.5f), GPIO_PWM_SG90_C0_IDX);
+    // 直接设置PWM占空比
+    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, angle, GPIO_PWM_SG90_C0_IDX);
 }
 
 /******************************************************************
  * 函 数 名 称：Set_Servo2_Angle
- * 函 数 说 明：设置舵机2的角度
- * 函 数 形 参：angle=要设置的角度，范围SERVO2_MIN_ANGLE到SERVO2_MAX_ANGLE
+ * 函 数 说 明：设置舵机2的PWM值
+ * 函 数 形 参：angle=要设置的PWM值，范围0到400
  * 函 数 返 回：无
 
 ******************************************************************/
 void Set_Servo2_Angle(unsigned int angle)
 {
-    uint32_t period = 400;
-
-    // 限制角度在设定范围内
-    if(angle < SERVO2_MIN_ANGLE)
+    // 限制PWM值在设定范围内
+    if(angle > 400)
     {
-        angle = SERVO2_MIN_ANGLE;
-    }
-    else if(angle > SERVO2_MAX_ANGLE)
-    {
-        angle = SERVO2_MAX_ANGLE;
+        angle = 400;
     }
 
     Servo2_Angle = angle;
 
-    // 计算PWM占空比
-    // 0.5ms对应的计数 = 10
-    // 2.5ms对应的计数 = 50
-    float min_count = 10.0f;
-    float max_count = 50.0f;
-    float range = max_count - min_count;
-    float ServoAngle = min_count + (((float)angle / SERVO_MAX_ANGLE) * range);
-
-    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, (unsigned int)(ServoAngle + 0.5f), GPIO_PWM_SG90_C1_IDX); // 使用第二个通道C1
+    // 直接设置PWM占空比
+    DL_TimerG_setCaptureCompareValue(PWM_SG90_INST, angle, GPIO_PWM_SG90_C1_IDX); // 使用第二个通道C1
 }
 
 /******************************************************************
  * 函 数 名 称：Get_Servo1_Angle
- * 函 数 说 明：读取舵机1当前角度
+ * 函 数 说 明：读取舵机1当前PWM值
  * 函 数 形 参：无
- * 函 数 返 回：当前角度
+ * 函 数 返 回：当前PWM值
 ******************************************************************/
 unsigned int Get_Servo1_Angle(void)
 {
@@ -98,14 +67,55 @@ unsigned int Get_Servo1_Angle(void)
 
 /******************************************************************
  * 函 数 名 称：Get_Servo2_Angle
- * 函 数 说 明：读取舵机2当前角度
+ * 函 数 说 明：读取舵机2当前PWM值
  * 函 数 形 参：无
- * 函 数 返 回：当前角度
+ * 函 数 返 回：当前PWM值
 ******************************************************************/
 unsigned int Get_Servo2_Angle(void)
 {
     return Servo2_Angle;
 }
 
+/******************************************************************
+ * 函 数 名 称：Set_Servo1_MidAngle
+ * 函 数 说 明：设置舵机1到中间位置
+ * 函 数 形 参：无
+ * 函 数 返 回：无
+******************************************************************/
+void Set_Servo1_MidAngle(void)
+{
+    Set_Servo1_Angle(SERVO1_MID_ANGLE);
+}
 
+/******************************************************************
+ * 函 数 名 称：Set_Servo2_MidAngle
+ * 函 数 说 明：设置舵机2到中间位置
+ * 函 数 形 参：无
+ * 函 数 返 回：无
+******************************************************************/
+void Set_Servo2_MidAngle(void)
+{
+    Set_Servo2_Angle(SERVO2_MID_ANGLE);
+}
 
+/******************************************************************
+ * 函 数 名 称：Set_Servo_Angle
+ * 函 数 说 明：兼容性函数，设置舵机1的PWM值
+ * 函 数 形 参：angle=要设置的PWM值，范围0到400
+ * 函 数 返 回：无
+******************************************************************/
+void Set_Servo_Angle(unsigned int angle)
+{
+    Set_Servo1_Angle(angle);
+}
+
+/******************************************************************
+ * 函 数 名 称：Get_Servo_Angle
+ * 函 数 说 明：兼容性函数，读取舵机1当前PWM值
+ * 函 数 形 参：无
+ * 函 数 返 回：当前PWM值
+******************************************************************/
+unsigned int Get_Servo_Angle(void)
+{
+    return Get_Servo1_Angle();
+}

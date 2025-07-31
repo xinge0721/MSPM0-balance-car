@@ -61,9 +61,20 @@ void Topic_1(void)
 }
 
 // 题目二
+float Position1 = 30,Position2 = 30; //舵机当前位置
+
 void Topic_2(void)
 {
-    
+    float Velocity1 = Position_PID_1(Position1,0);
+    float Velocity2 = Position_PID_2(Position2,0);
+
+    Position1 += Velocity1;
+    Position2 += Velocity2;
+
+    Set_Servo1_Angle((uint16_t)Position1);
+    Set_Servo2_Angle((uint16_t)Position2);
+
+
 }
 
 

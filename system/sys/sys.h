@@ -16,6 +16,8 @@
 #include "Hardware/Tracking/Tracking.h"
 #include "Hardware/SMS_STS/SMS_STS.h"
 #include "gray.h"
+#include "Hardware/UART1/UART1.h"
+#include "Hardware/WIT/interrupt.h"
 
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */

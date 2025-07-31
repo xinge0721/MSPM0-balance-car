@@ -64,4 +64,9 @@ void mithon_run_pid(int pid_speed_left, int pid_speed_right, int now_position);
 // 清空位置环累计脉冲
 void mithon_run_pid_clear(void);
 
+
+//舵机PID
+float Position_PID_1(float Position,float Target);
+float Position_PID_2(float Position,float Target);
+
 #endif

@@ -167,3 +167,50 @@ void mithon_run_pid_clear(void)
 	target_position_right = 0;
 	target_position_left = 0;
 }
+
+//////////////////////////////
+//舵机PID
+/////////////////////////////
+
+struct PID_TypeDef
+{
+	float	KP;
+	float	KI;
+	float	KD;
+	float	Bias;
+	float	Pwm;
+	float	Integral_bias;
+	float	Last_Bias;
+};
+
+struct PID_TypeDef PID_jiguang = {2.5,0,15,0,0,0};
+struct PID_TypeDef PID_shexiantou = {2.5,0,15,0,0,0};
+//struct PID_TypeDef PID_shexiantou = {2.5,0,15,0,0,0};
+/*************************************************************************
+函数功能：位置式PID控制器
+入口参数：编码器测量位置信息，目标位置
+返回  值：电机PWM增量
+**************************************************************************/
+float Position_PID_1(float Position,float Target)
+{ 	                                          //增量输出
+	PID_jiguang.Bias=Target-Position;                                  //计算偏差
+	PID_jiguang.Integral_bias+=PID_jiguang.Bias;	                                 //求出偏差的积分
+	PID_jiguang.Pwm=PID_jiguang.KP*PID_jiguang.Bias/100+PID_jiguang.KI*PID_jiguang.Integral_bias/100+PID_jiguang.KD*(PID_jiguang.Bias-PID_jiguang.Last_Bias)/100;       //位置式PID控制器
+	 PID_jiguang.Last_Bias=PID_jiguang.Bias;                                       //保存上一次偏差 
+	 return PID_jiguang.Pwm;  
+}
+/*************************************************************************
+函数功能：位置式PID控制器
+入口参数：编码器测量位置信息，目标位置
+返回  值：电机PWM增量
+**************************************************************************/
+
+
+float Position_PID_2(float Position,float Target)
+{ 	                                         //增量输出
+	 PID_shexiantou.Bias=Target-Position;                                  //计算偏差
+	 PID_shexiantou.Integral_bias+=PID_shexiantou.Bias;	                                 //求出偏差的积分
+	 PID_shexiantou.Pwm=PID_shexiantou.KP*PID_shexiantou.Bias/100+PID_shexiantou.KI*PID_shexiantou.Integral_bias/100+PID_shexiantou.KD*(PID_shexiantou.Bias-PID_shexiantou.Last_Bias)/100;       //位置式PID控制器
+	 PID_shexiantou.Last_Bias=PID_shexiantou.Bias;                                       //保存上一次偏差 
+	 return PID_shexiantou.Pwm;  
+}

@@ -37,6 +37,23 @@ void Xunjiban(void)
 }
 
 
+void DisplayParameters(void)
+{
+    OLED_ShowString(1, 1, "Status:");
+    OLED_ShowSignedNum(1, 8, OpenMv_status, 1);
+    
+    OLED_ShowString(2, 1, "X:");
+    OLED_ShowSignedNum(2, 3, OpenMv_X, 4);
+    
+    OLED_ShowString(3, 1, "Y:");
+    OLED_ShowSignedNum(3, 3, OpenMv_Y, 4);
+    
+    OLED_ShowString(4, 1, "C:");
+    OLED_ShowSignedNum(4, 3, UART_1_cont, 4);
+}
+
+
+
 int main( void )
 {
     SYSCFG_DL_init();
@@ -45,9 +62,9 @@ int main( void )
     // OLED初始化
     OLED_Init();
     // 这里需要传入对应的串口print的函数，是函数名，因为参数是一个函数指针
-    APP_Init(uart0_printf);
+    // APP_Init(uart0_printf);
     // 维特陀螺仪初始化
-    // WIT_Init();
+    WIT_Init();
     // 初始化防误判系统
     // init_anti_misjudgment();
     // 初始化系统中断
@@ -61,12 +78,15 @@ int main( void )
     NVIC_EnableIRQ(TIMER_0_INST_INT_IRQN);
 
     NVIC_ClearPendingIRQ(UART_0_INST_INT_IRQN);
-    NVIC_ClearPendingIRQ(UART_1_INST_INT_IRQN);
     //使能串口中断
     NVIC_EnableIRQ(UART_0_INST_INT_IRQN);
-    NVIC_EnableIRQ(UART_1_INST_INT_IRQN);
+    //清除串口中断标志
+    NVIC_ClearPendingIRQ(UART1_INT_IRQn);
+
+    //使能串口中
+    NVIC_EnableIRQ(UART1_INT_IRQn);
     
-    SMS_STS_Init();
+    // SMS_STS_Init();
     int iiii = 0;
      int JJJJ = 0;
     while(1)
@@ -80,45 +100,14 @@ int main( void )
         if(keynum==1){go_flag=1;}        
 
         // process_sensors();
-        Xunjiban();
-        OLED_ShowString(3, 1, "Value:");
-        OLED_ShowSignedNum(3, 7,A_stable, 1);//total_distance
-        OLED_ShowSignedNum(3, 10,Topic_flag, 1);//total_distance
+        DisplayParameters();
 
-
-        OLED_ShowString(4, 1, "yaw:");
-        OLED_ShowFloatNum(4, 7, (wit_data.yaw),3);
         delay_ms(10);
 
-        float data[] = {target_position_left, target_position_right,728*2};
-        APP_Send(data, 3);
+        // float data[] = {target_position_left, target_position_right,728*2};
+        // APP_Send(data, 3);
 
         delay_ms(10);
 
     }
 }
-
-// //printf
-// int fputc(int c, FILE * stream)
-// {
-//     DL_UART_Main_transmitDataBlocking(UART_1_INST,c); // 发送完成后结束
-//     return c;
-// }
-
-// int fputs(const char * restrict s, FILE * restrict stream)
-// {
-//     uint16_t i, len;
-//     len = strlen(s);
-//     for(i=0; i<len; i++)
-//     {
-//         DL_UART_Main_transmitDataBlocking(UART_1_INST, s[i]);
-//     }
-//     return len;
-// }
-
-// int puts(const char *_ptr)
-// {
-//     int count = fputs(_ptr,stdout);
-//     count += fputs("\n",stdout);
-//     return count;
-// }

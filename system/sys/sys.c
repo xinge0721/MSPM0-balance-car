@@ -149,7 +149,7 @@ void TIMER_0_INST_IRQHandler(void)
             
             if(go_flag ==1)// 巡线
             {
-                Topic_1();
+                Control_speed(0,2000);
             }
             break;
 
