@@ -100,18 +100,17 @@ void Topic_2(void)
 // 题目三 - 自适应瞄准系统
 void Topic_3(void)
 {
-    // static uint8_t init_flag = 0;
+    static uint8_t init_flag = 0;
     
-    // // 只在第一次调用时初始化
-    // if (init_flag == 0) {
-    //     adaptive_aiming_init();
-    //     init_flag = 1;
-    // }
+    // 只在第一次调用时初始化
+    if (init_flag == 0) {
+        adaptive_aiming_init();
+        init_flag = 1;
+    }
     
-    // // 执行自适应瞄准更新
-    // adaptive_aiming_update();
+    // 执行自适应瞄准更新
+    adaptive_aiming_update();
 }
-
 
 // 题目四
 void Topic_4(void)
@@ -146,7 +145,7 @@ void adaptive_aiming_init(void)
     aiming_x.last_error = 0;             // 上一次误差
     aiming_x.overshoot_count = 0;        // 过冲计数
     aiming_x.min_scale = 0.1f;           // 最小比例系数
-    aiming_x.max_scale = 2.0f;           // 最大比例系数
+    aiming_x.max_scale = 4.0f;           // 最大比例系数
     aiming_x.stable_count = 0;           // 稳定计数
     
     // 初始化Y轴瞄准控制器
@@ -184,7 +183,7 @@ float adaptive_aiming_calculate(AdaptiveAiming_t* aiming, int current_error, flo
         }
     } else if (aiming->overshoot_count == 0) {
         // 如果没有发生过冲，可以适当增加比例系数（更积极）
-        aiming->scale_factor *= 1.05f;  // 缓慢增加5%
+        aiming->scale_factor *= 1.05f;  // 缓慢增加10%
         
         // 限制最大比例系数
         if (aiming->scale_factor > aiming->max_scale) {
@@ -214,7 +213,7 @@ void adaptive_aiming_update(void)
     float base_step_y = 0.5f;  // Y轴基础步长
     
     // 计算X轴控制量
-    float control_x = adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
+    float control_x = -adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
     
     // 计算Y轴控制量
     float control_y = adaptive_aiming_calculate(&aiming_y, target_angle_y, base_step_y);

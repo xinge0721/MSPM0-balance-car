@@ -126,13 +126,13 @@ void TIMER_0_INST_IRQHandler(void)
     {
         case DL_TIMER_IIDX_ZERO://如果0溢出中断
             LED_count ++;
-
+                
             // 每10ms扫描一次按键状态机（支持5个按键）
-            KEY_ReadStateMachine(0); // 扫描KEY1
-            KEY_ReadStateMachine(1); // 扫描KEY2
-            KEY_ReadStateMachine(2); // 扫描KEY3
-            KEY_ReadStateMachine(3); // 扫描KEY4
-            KEY_ReadStateMachine(4); // 扫描KEY5
+            // KEY_ReadStateMachine(0); // 扫描KEY1
+            // KEY_ReadStateMachine(1); // 扫描KEY2
+            // KEY_ReadStateMachine(2); // 扫描KEY3
+            // KEY_ReadStateMachine(3); // 扫描KEY4
+            // KEY_ReadStateMachine(4); // 扫描KEY5
 
             if( LED_count % 10 == 0)//500ms中断一次
             {
@@ -140,9 +140,9 @@ void TIMER_0_INST_IRQHandler(void)
                 DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
             }
 
-            target_angle_x = get_angle_x();
-
-            target_angle_y = get_angle_y();
+            // 获取摄像头实时像素误差（应该是赋值，不是累加！）
+            target_angle_x = get_angle_x();    // X轴像素误差
+            target_angle_y = get_angle_y();    // Y轴像素误差
 
 
             // 获取左编码器
@@ -159,6 +159,7 @@ void TIMER_0_INST_IRQHandler(void)
             // Control_speed(0,2000);
             if(go_flag ==1)
             {
+                // 启动自适应瞄准系统（10ms周期调用）
                 Topic_3();
             }
             break;

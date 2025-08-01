@@ -151,6 +151,10 @@ void SMS_STS_Init(void)
     
     control_position(1,2048);
     control_position(2,2048);
+        // 1. 根据 motor_status 中的目标位置，驱动舵机1和2转动
+    SMS_STS_Run(1, motor_status[1].position, 0, 0); 
+    SMS_STS_Run(2, motor_status[2].position, 0, 0);
+
 
 }
 
@@ -1312,13 +1316,13 @@ void control_position(uint8_t id, int32_t signed_position)
 void Update_Servos_Position(void)
 {
     // 1. 根据 motor_status 中的目标位置，驱动舵机1和2转动
-    SMS_STS_Run(1, motor_status[1].position, 0, 0); 
-    SMS_STS_Run(2, motor_status[2].position, 0, 0);
+    SMS_STS_Run(1, motor_status[1].position, 10, 0); 
+    // SMS_STS_Run(2, motor_status[2].position, 0, 0);
     
     // 2. 发送指令读取舵机1的位置
     SMS_STS_Read(1);
     // 短暂延时，确保总线空闲，避免指令冲突
     delay_ms(2);
     // 3. 发送指令读取舵机2的位置
-    SMS_STS_Read(2);
+    // SMS_STS_Read(2);
 }

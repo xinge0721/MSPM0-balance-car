@@ -172,7 +172,7 @@ void UART_0_INST_IRQHandler(void)
         case DL_UART_IIDX_RX://如果是接收中断
             //将发送过来的数据保存在变量中
             uart_data = (uint8_t)DL_UART_Main_receiveData(UART_0_INST);
-            uart0_send_char(uart_data);
+            // uart0_send_char(uart_data);
 
             // 调用OpenMV通信协议处理函数
             uart0_process_data(uart_data);
