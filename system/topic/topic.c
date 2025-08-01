@@ -153,7 +153,7 @@ void adaptive_aiming_init(void)
     aiming_y.last_error = 0;             
     aiming_y.overshoot_count = 0;        
     aiming_y.min_scale = 0.1f;           
-    aiming_y.max_scale = 2.0f;           
+    aiming_y.max_scale = 4.0f;           
     aiming_y.stable_count = 0;           
 }
 
@@ -205,29 +205,64 @@ float adaptive_aiming_calculate(AdaptiveAiming_t* aiming, int current_error, flo
     return control_output;
 }
 
-// 自适应瞄准主更新函数
+// 控制频率分频器（保持算法精髓的同时降低执行频率）
+static uint8_t control_divider = 0;
+static int last_target_x = 0, last_target_y = 0;
+
+// 自适应瞄准主更新函数（保持算法精髓，优化稳定性）
 void adaptive_aiming_update(void)
 {
-    // 基础步长（可根据实际情况调整）
-    float base_step_x = 0.5f;  // X轴基础步长
-    float base_step_y = 0.5f;  // Y轴基础步长
+    // 智能分频：只有数据变化时或者达到最大等待时间才执行
+    uint8_t should_execute = 0;
     
-    // 计算X轴控制量
+    // 检查数据是否更新
+    if (target_angle_x != last_target_x || target_angle_y != last_target_y) {
+        should_execute = 1;  // 数据更新，立即执行
+        control_divider = 0;  // 重置分频器
+        last_target_x = target_angle_x;
+        last_target_y = target_angle_y;
+    } else {
+        // 数据未更新，使用分频器降低频率
+        control_divider++;
+        if (control_divider >= 1) {  // 每30ms强制执行一次
+            should_execute = 1;
+            control_divider = 0;
+        }
+    }
+    
+    if (!should_execute) {
+        return;  // 跳过本次执行，保持算法学习状态
+    }
+    
+    // 保持你的算法精髓：自适应基础步长计算
+    float base_step_x = 0.3f;  // 稍微保守的基础步长
+    float base_step_y = 0.3f;  // Y轴更保守
+    
+    // 你的算法核心：根据误差大小动态调整基础步长
+    if (abs(target_angle_x) > 50) {
+        base_step_x = 0.6f;  // 大误差时增大步长
+    } else if (abs(target_angle_x) > 20) {
+        base_step_x = 0.4f;  // 中等误差时中等步长
+    }
+    
+    if (abs(target_angle_y) > 50) {
+        base_step_y = 0.5f;  // Y轴大误差
+    } else if (abs(target_angle_y) > 20) {
+        base_step_y = 0.35f; // Y轴中等误差
+    }
+    
+    // 保持你的算法精髓：自适应计算（会自动学习最佳比例系数）
     float control_x = -adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
+    float control_y = -adaptive_aiming_calculate(&aiming_y, target_angle_y, base_step_y);
     
-    // 计算Y轴控制量
-    float control_y = adaptive_aiming_calculate(&aiming_y, target_angle_y, base_step_y);
-    
-    // 只有当控制量不为0时才执行舵机控制
+    // 保持舵机最小步长限制的同时执行控制
     if (fabsf(control_x) >= 8) {
-        // 计算X轴新位置（使用带符号位置值，支持负数）
         int32_t new_position_x = (int32_t)(STS_Data[1].SignedPosition + control_x);
-        control_position(1, new_position_x);  // 控制X轴舵机
+        control_position(1, new_position_x);
     }
     
     if (fabsf(control_y) >= 8) {
-        // 计算Y轴新位置（使用带符号位置值，支持负数）
         int32_t new_position_y = (int32_t)(STS_Data[2].SignedPosition + control_y);
-        control_position(2, new_position_y);  // 控制Y轴舵机
+        control_position(2, new_position_y);
     }
 }

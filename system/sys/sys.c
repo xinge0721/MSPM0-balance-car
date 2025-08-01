@@ -125,6 +125,7 @@ void TIMER_0_INST_IRQHandler(void)
     switch( DL_TimerG_getPendingInterrupt(TIMER_0_INST) )
     {
         case DL_TIMER_IIDX_ZERO://如果0溢出中断
+        {
             LED_count ++;
                 
             // 每10ms扫描一次按键状态机（支持5个按键）
@@ -140,7 +141,7 @@ void TIMER_0_INST_IRQHandler(void)
                 DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
             }
 
-            // 获取摄像头实时像素误差（应该是赋值，不是累加！）
+            // 获取摄像头实时像素误差（是赋值，不是累加！）
             target_angle_x = get_angle_x();    // X轴像素误差
             target_angle_y = get_angle_y();    // Y轴像素误差
 
@@ -163,7 +164,7 @@ void TIMER_0_INST_IRQHandler(void)
                 Topic_3();
             }
             break;
-
+        }
         default://其他的定时器中断
             break;
     }

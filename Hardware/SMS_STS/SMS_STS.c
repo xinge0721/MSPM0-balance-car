@@ -73,7 +73,7 @@
 #define SMS_STS_TX_BUF_SIZE 13 // 发送缓冲区大小, 写位置指令需要13字节
 
 // 超时配置（毫秒）
-#define SMS_STS_TIMEOUT     10 // 通信超时时间
+#define SMS_STS_TIMEOUT     2 // 通信超时时间
 
 // 舵机模式定义
 #define SMS_STS_MODE_POSITION 0 // 位置控制模式
@@ -235,6 +235,79 @@ SMS_STS_Error_t SMS_STS_Run(uint8_t ID, uint16_t Position, uint16_t RunTime, uin
 
     // 发送数据
     Serial_SendArray(sms_tx_buf, 13);
+
+    // 数据发送完毕，标识当前数据线空闲
+    SMS_STS_Read_Flag = 0;
+    
+    return SMS_STS_OK;
+}
+
+/****************************************************************
+ * 函数名称: SMS_STS_Run_With_Accel
+ * 函数功能: 控制舵机转动到指定位置（带加速度控制）
+ * 输入参数: 
+ *     ID - 舵机ID号(1-4)
+ *     Position - 目标位置值(0-4095)
+ *     RunTime - 运行时间(0-65535)，单位为毫秒
+ *     Speed - 运行速度(0-65535)，0表示使用默认值
+ *     Acceleration - 加速度值(0-255)
+ * 返回值: 
+ *     SMS_STS_OK - 操作成功
+ *     SMS_STS_ERR_PARAM - 参数错误(ID无效)
+ *     SMS_STS_ERR_BUSY - 总线忙，无法发送
+ * 使用说明: 
+ *     1. 舵机需在位置模式下使用此函数
+ *     2. Position为0-4095，对应0-360度
+ *     3. 相比SMS_STS_Run函数，增加了加速度控制参数
+ *     4. 该指令发送后不需要等待应答
+ ****************************************************************/
+SMS_STS_Error_t SMS_STS_Run_With_Accel(uint8_t ID, uint16_t Position, uint16_t RunTime, uint16_t Speed, uint8_t Acceleration)
+{
+    // 检查ID有效性
+    if (!SMS_STS_Is_Valid_ID(ID)) {
+        return SMS_STS_ERR_PARAM;
+    }
+    
+    // 如果当前有数据在传输，则不进行发送
+    if (SMS_STS_Read_Flag != 0) {
+        return SMS_STS_ERR_BUSY;
+    }
+    // 标识当前在发送数据（该指令不需要应答）
+    SMS_STS_Read_Flag = 1;
+
+    uint8_t checksum = 0; // 校验和
+
+    // 帧头
+    sms_tx_buf[0] = SMS_STS_FRAME_HEADER;
+    sms_tx_buf[1] = SMS_STS_FRAME_HEADER;
+    // 舵机ID
+    sms_tx_buf[2] = ID;
+    // 数据长度（比原来多1个字节用于加速度）
+    sms_tx_buf[3] = 0x0A;
+    // 写指令
+    sms_tx_buf[4] = SMS_STS_CMD_WRITE;
+    // 起始地址（加速度控制寄存器地址）
+    sms_tx_buf[5] = 0x29;
+    // 加速度
+    sms_tx_buf[6] = Acceleration;
+    // 位置
+    sms_tx_buf[7] = Position & 0xFF;        // 低字节
+    sms_tx_buf[8] = (Position >> 8) & 0xFF; // 高字节
+    // 运行时间
+    sms_tx_buf[9] = RunTime & 0xFF;         // 低字节
+    sms_tx_buf[10] = (RunTime >> 8) & 0xFF;  // 高字节
+    // 运行速度
+    sms_tx_buf[11] = Speed & 0xFF;          // 低字节
+    sms_tx_buf[12] = (Speed >> 8) & 0xFF;   // 高字节
+
+    // 计算校验和
+    for (int i = 2; i < 13; i++) {
+        checksum += sms_tx_buf[i];
+    }
+    sms_tx_buf[13] = ~checksum; // 取反
+
+    // 发送数据
+    Serial_SendArray(sms_tx_buf, 14);
 
     // 数据发送完毕，标识当前数据线空闲
     SMS_STS_Read_Flag = 0;
@@ -1315,14 +1388,16 @@ void control_position(uint8_t id, int32_t signed_position)
  ****************************************************************/
 void Update_Servos_Position(void)
 {
+
     // 1. 根据 motor_status 中的目标位置，驱动舵机1和2转动
-    SMS_STS_Run(1, motor_status[1].position, 10, 0); 
-    // SMS_STS_Run(2, motor_status[2].position, 0, 0);
-    
-    // 2. 发送指令读取舵机1的位置
+    SMS_STS_Run_With_Accel(1,motor_status[1].position, 0, 0, 0); 
     SMS_STS_Read(1);
-    // 短暂延时，确保总线空闲，避免指令冲突
+    delay_ms(4);
+        SMS_STS_Run_With_Accel(2, motor_status[2].position, 0, 0, 0); 
+    SMS_STS_Read(2);
     delay_ms(2);
+    // 2. 发送指令读取舵机1的位置
+
+    // 短暂延时，确保总线空闲，避免指令冲突
     // 3. 发送指令读取舵机2的位置
-    // SMS_STS_Read(2);
 }

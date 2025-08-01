@@ -47,6 +47,27 @@ void SMS_STS_Init(void);
 SMS_STS_Error_t SMS_STS_Run(uint8_t ID, uint16_t Position, uint16_t RunTime, uint16_t Speed);
 
 /****************************************************************
+ * 函数名称: SMS_STS_Run_With_Accel
+ * 函数功能: 控制舵机转动到指定位置（带加速度控制）
+ * 输入参数: 
+ *     ID - 舵机ID号(1-4)
+ *     Position - 目标位置值(0-4095)
+ *     RunTime - 运行时间(0-65535)，单位为毫秒
+ *     Speed - 运行速度(0-65535)，0表示使用默认值
+ *     Acceleration - 加速度值(0-255)
+ * 返回值: 
+ *     SMS_STS_OK - 操作成功
+ *     SMS_STS_ERR_PARAM - 参数错误(ID无效)
+ *     SMS_STS_ERR_BUSY - 总线忙，无法发送
+ * 使用说明: 
+ *     1. 舵机需在位置模式下使用此函数
+ *     2. Position为0-4095，对应0-360度
+ *     3. 相比SMS_STS_Run函数，增加了加速度控制参数
+ *     4. 该指令发送后不需要等待应答
+ ****************************************************************/
+SMS_STS_Error_t SMS_STS_Run_With_Accel(uint8_t ID, uint16_t Position, uint16_t RunTime, uint16_t Speed, uint8_t Acceleration);
+
+/****************************************************************
  * 函数名称: SMS_STS_Read
  * 函数功能: 发送读取舵机当前位置的请求
  * 输入参数: 

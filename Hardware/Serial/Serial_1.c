@@ -57,12 +57,13 @@ void UART_1_INST_IRQHandler(void)
     switch( DL_UART_getPendingInterrupt(UART_1_INST) )
     {
         case DL_UART_IIDX_RX://如果是接收中断
+        {
             //将发送过来的数据保存在变量中
             uart_data = (uint8_t)DL_UART_Main_receiveData(UART_1_INST);
 
             SMS_STS_Process_SyncRead_Byte(uart_data);
             break;
-
+        }
         default://其他的串口中断
             break;
     }

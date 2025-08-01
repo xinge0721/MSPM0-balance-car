@@ -140,7 +140,8 @@ int main( void )
         // 保留原有的按键检测作为备用
         keynum=Get_Key1Num();
         if(keynum==1){go_flag=1;}
-        Update_Servos_Position();
+        if(OpenMv_status != 2)
+            Update_Servos_Position();
         // 显示自适应瞄准调试信息
         OLED_ShowString(1, 1, "Pos:");
         OLED_ShowSignedNum(1, 5, STS_Data[1].SignedPosition, 4);  // X轴舵机带符号位置
@@ -152,15 +153,15 @@ int main( void )
         OLED_ShowNum(4, 5, aiming_x.overshoot_count, 2);    // X轴过冲次数
 
         // 自适应瞄准系统调试参数发送（只调试X轴舵机）
-        float arrrr[4] = {
+        float arrrr[5] = {
             15,     // X轴舵机当前带符号位置（支持负数）
-            target_angle_x,                 // X轴像素误差（摄像头检测）
-            // aiming_x.scale_factor,          // X轴自适应比例系数
-            // aiming_x.overshoot_count        // X轴过冲次数
-            OpenMv_X,                 // X坐标值（带符号）
+            target_angle_y,                 // X轴像素误差（摄像头检测）
+            aiming_y.scale_factor,          // X轴自适应比例系数
+            aiming_y.overshoot_count,        // X轴过冲次数
+            // OpenMv_X,                 // X坐标值（带符号）
             OpenMv_Y              // Y坐标值（带符号）
         };
-        APP_Send(arrrr,4);
+        APP_Send(arrrr,5);
 
         // 显示系统状态
         // OLED_ShowString(1, 1, "State:");
