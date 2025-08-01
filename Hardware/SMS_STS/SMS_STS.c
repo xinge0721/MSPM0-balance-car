@@ -1,5 +1,6 @@
 #include "SMS_STS.h"
 #include "../Serial/Serial.h" // 添加缺少的串口头文件
+#include "../Serial/Serial_1.h" // 添加Serial_1.h以提供uart1_SendArray()函数声明
 #include <stdlib.h> // 添加stdlib.h以提供abs()函数声明
 
 /******************************************************************************
@@ -50,7 +51,7 @@
  ******************************************************************************/
 
 // 发送数组函数
-#define Serial_SendArray(buf, x) uart0_SendArray(buf, x)
+#define Serial_SendArray(buf, x) uart1_SendArray(buf, x)
 
 // 舵机指令宏定义
 #define SMS_STS_CMD_WRITE 0x03 // 写指令
@@ -1246,6 +1247,7 @@ void SMS_STS_Receive_Enhanced(uint8_t data)
     // 处理接收到的字节
     SMS_STS_Process_SyncRead_Byte(data);
 }
+
 // 将MotorStatus的定义和motor_status数组的声明移到.h文件
 MotorStatus motor_status[SMS_STS_MAX_SERVOS + 1];
 
@@ -1271,8 +1273,40 @@ void control(uint8_t id,float angle)
 void Update_Servos(void)
 {
     // 1. 根据 motor_status 中的目标角度，驱动舵机1和2转动
-    //SMS_STS_Set_Angle(1, motor_status[1].angle, 0, 0); 
-    //SMS_STS_Set_Angle(2, motor_status[2].angle, 0, 0);
+    SMS_STS_Set_Angle(1, motor_status[1].angle, 0, 0); 
+    SMS_STS_Set_Angle(2, motor_status[2].angle, 0, 0);
+    
+    // 2. 发送指令读取舵机1的位置
+    SMS_STS_Read(1);
+    // 短暂延时，确保总线空闲，避免指令冲突
+    delay_ms(2);
+    // 3. 发送指令读取舵机2的位置
+    SMS_STS_Read(2);
+}
+
+/*控制舵机“位置”
+函数参数:id号,位置值
+*/
+void control_position(uint8_t id,uint16_t position)
+{
+	// 只保存目标位置到状态数组中
+	motor_status[id].position = position;
+}
+/****************************************************************
+ * 函数名称: Update_Servos
+ * 函数功能: 更新所有舵机的状态，包括设置位置和请求位置
+ * 输入参数: 无
+ * 返回值: 无
+ * 使用说明:
+ *     1. 在主循环中调用此函数
+ *     2. 该函数会根据 motor_status 数组中的目标位置来驱动舵机
+ *     3. 驱动后会立即发送读取指令以获取舵机的最新位置
+ ****************************************************************/
+void Update_Servos_Position(void)
+{
+    // 1. 根据 motor_status 中的目标位置，驱动舵机1和2转动
+    SMS_STS_Run(1, motor_status[1].position, 0, 0); 
+    SMS_STS_Run(2, motor_status[2].position, 0, 0);
     
     // 2. 发送指令读取舵机1的位置
     SMS_STS_Read(1);

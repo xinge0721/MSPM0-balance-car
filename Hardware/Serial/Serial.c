@@ -61,6 +61,20 @@ void uart0_printf(const char *format, ...)
     uart0_send_string(buffer);
 }
 
+// 
+int16_t get_angle_x()
+{
+    int16_t temp = OpenMv_X;
+    OpenMv_X = 0;
+    return temp;
+}
+int16_t get_angle_y()
+{
+    int16_t temp = OpenMv_Y;
+    OpenMv_Y = 0;
+    return temp;
+}
+
 // UART0接收数据处理函数
 void uart0_process_data(uint8_t data)
 {
@@ -70,75 +84,62 @@ void uart0_process_data(uint8_t data)
     // 将接收到的数据存储到缓冲区
     switch (packet_received_count)
     {
-    case 0://等待第一个包头
+    case 0://等待包头
         if(data == 0xEE)
         {
             uart0_arr[0] = data;
             packet_received_count++;
-            packet_received_count++;
-
         }
         else
         {
             packet_received_count = 0;
         }
         break;
-    // case 1://等待第二个包头
-    //     if(data == 0xEE)
-    //     {
-    //         uart0_arr[1] = data;
-    //         packet_received_count++;
-    //     }
-    //     else
-    //     {
-    //         packet_received_count = 0;
-    //     }
-    //     break;
-    case 2://等待状态值
+    case 1://等待状态值
+        uart0_arr[1] = data;
+        packet_received_count++;
+        break;
+    case 2://等待X坐标标志位
         uart0_arr[2] = data;
         packet_received_count++;
         break;
-    case 3://等待X坐标标志位
+    case 3://等待X坐标值
         uart0_arr[3] = data;
         packet_received_count++;
         break;
-    case 4://等待X坐标值
+    case 4://等待Y坐标标志位
         uart0_arr[4] = data;
         packet_received_count++;
         break;
-    case 5://等待Y坐标标志位
+    case 5://等待Y坐标值
         uart0_arr[5] = data;
         packet_received_count++;
         break;
-    case 6://等待Y坐标值
-        uart0_arr[6] = data;
-        packet_received_count++;
-        break;
-    case 7://计算校验和
+    case 6://计算校验和
         {
-            uint8_t calculated_checksum = (uart0_arr[2] + uart0_arr[3] + uart0_arr[4] + uart0_arr[5] + uart0_arr[6]) % 256;
+            uint8_t calculated_checksum = (uart0_arr[1] + uart0_arr[2] + uart0_arr[3] + uart0_arr[4] + uart0_arr[5]) % 256;
             
             // 调试输出：显示接收到的完整数据包
-            // uart0_printf("收到数据包: %02X %02X %02X %02X %02X %02X %02X %02X\r\n",
+            // uart0_printf("收到数据包: %02X %02X %02X %02X %02X %02X %02X\r\n",
             //             uart0_arr[0], uart0_arr[1], uart0_arr[2], uart0_arr[3],
-            //             uart0_arr[4], uart0_arr[5], uart0_arr[6], data);
+            //             uart0_arr[4], uart0_arr[5], data);
             
             // uart0_printf("计算校验和: %02X, 接收校验和: %02X\r\n", calculated_checksum, data);
             
             if(data == calculated_checksum)
             {
-                OpenMv_status = uart0_arr[2];
+                OpenMv_status = uart0_arr[1];
                 // 根据标志位直接计算带符号的坐标值
-                if(uart0_arr[3] == 0) {
-                    OpenMv_X = (int16_t)uart0_arr[4];  // X坐标为正
+                if(uart0_arr[2] == 0) {
+                    OpenMv_X = (int16_t)uart0_arr[3];  // X坐标为正
                 } else {
-                    OpenMv_X = -(int16_t)uart0_arr[4]; // X坐标为负
+                    OpenMv_X = -(int16_t)uart0_arr[3]; // X坐标为负
                 }
                 
-                if(uart0_arr[5] == 0) {
-                    OpenMv_Y = (int16_t)uart0_arr[6];  // Y坐标为正
+                if(uart0_arr[4] == 0) {
+                    OpenMv_Y = (int16_t)uart0_arr[5];  // Y坐标为正
                 } else {
-                    OpenMv_Y = -(int16_t)uart0_arr[6]; // Y坐标为负
+                    OpenMv_Y = -(int16_t)uart0_arr[5]; // Y坐标为负
                 }
                 
                 // uart0_printf("数据包验证成功！状态: %d, X: %d, Y: %d\r\n", OpenMv_status, OpenMv_X, OpenMv_Y);

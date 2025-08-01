@@ -23,5 +23,7 @@ void uart0_process_data(uint8_t data);  // OpenMV数据处理函数
 
 void BT_SendString(char*str);
 
+int16_t get_angle_x();
+int16_t get_angle_y();
 #endif
 

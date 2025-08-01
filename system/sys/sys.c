@@ -1,10 +1,15 @@
 #include "sys.h"
+#include "../Hardware/SMS_STS/SMS_STS.h"
 //#include "mspm0_clock.h"
 
 // 左编码器�?
 float left_encoder_value = 0;
 // 右编码器�?
 float right_encoder_value = 0;
+
+// 目标角度变量定义
+int target_angle_x = 0;
+int target_angle_y = 0;
 
 // 这是中断服务函数(ISR)，专门处理第一组(Group 1)的中断
 // 当GPIOA或者GPIOB上我们设定好的引脚电平发生变化时，程序就会暂停正在做的事情，
@@ -109,7 +114,9 @@ void GROUP1_IRQHandler(void)
 
 uint8_t LED_count;
 uint8_t go_flag=0;
-float target_angle = 0.0f; // 定义一个目标角度变量
+
+
+float target_angle = 0.0f; // 目标角度变量
 
 //定时器的中断服务函数 已配置为10ms的周期
 void TIMER_0_INST_IRQHandler(void)
@@ -120,21 +127,24 @@ void TIMER_0_INST_IRQHandler(void)
         case DL_TIMER_IIDX_ZERO://如果0溢出中断
             LED_count ++;
 
-            if( LED_count % 50 == 0)//100ms中断一次
+            // 每10ms扫描一次按键状态机（支持5个按键）
+            KEY_ReadStateMachine(0); // 扫描KEY1
+            KEY_ReadStateMachine(1); // 扫描KEY2
+            KEY_ReadStateMachine(2); // 扫描KEY3
+            KEY_ReadStateMachine(3); // 扫描KEY4
+            KEY_ReadStateMachine(4); // 扫描KEY5
+
+            if( LED_count % 10 == 0)//500ms中断一次
             {
                 //将LED灯的状态翻转，确认单片机没有卡
                 DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
-                // 调用control函数更新目标角度，但不驱动舵机
-                 if(go_flag != 0)
-                 {
-                    target_angle += 1.0f;
-                    if(target_angle >= 30) target_angle = 0;
-                    control(1, target_angle);
-                    control(2, target_angle);
-                 }
-
-
             }
+
+            target_angle_x += get_angle_x();
+
+            target_angle_y += get_angle_y();
+
+
             // 获取左编码器
             right.now_speed = right_encoder_value  = -Get_Encoder_Right();
             // 获取右编码器
@@ -147,9 +157,9 @@ void TIMER_0_INST_IRQHandler(void)
             }
 
             // Control_speed(0,2000);
-            if(go_flag ==1)// 巡线
+            if(go_flag ==1)
             {
-               Topic_1();
+                Topic_2();
             }
             break;
 

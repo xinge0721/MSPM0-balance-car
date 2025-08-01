@@ -1,5 +1,7 @@
 #include "topic.h"
 #include "Hardware/gray/gray.h"  // 包含循迹板相关定义
+#include <stdlib.h>  // 包含abs函数
+#include <math.h>    // 包含fabsf函数
 
 uint8_t Topic_flag = 0;
 // 拐弯角度值
@@ -79,23 +81,35 @@ float Position1 = 30,Position2 = 30; //舵机当前位置
 
 void Topic_2(void)
 {
-    float Velocity1 = Position_PID_1(Position1,300);
-    // float Velocity2 = Position_PID_2(Position2,0);
-
-    Position1 += Velocity1;
-    // Position2 += Velocity2;
-
-    Set_Servo1_Angle((uint16_t)Position1);
-    // Set_Servo2_Angle((uint16_t)Position2);
+    // 使用PID控制舵机X轴（ID=1），输入当前位置和累计目标位置
+    float pid_output_x = Position_PID_X(STS_Data[1].Position, 2000);
+    // 使用PID控制舵机Y轴（ID=2），输入当前位置和累计目标位置  
+    // float pid_output_y = Position_PID_Y(STS_Data[2].Position, 2000);
+    
+    // 将PID输出作为位置增量，计算新的目标位置
+    uint16_t new_position_x = (uint16_t)(STS_Data[1].Position + pid_output_x);
+    // uint16_t new_position_y = (uint16_t)(STS_Data[2].Position + pid_output_y);
+    
+    // 直接使用位置控制舵机，不限制范围，支持多圈
+    control_position(1, new_position_x);  // X轴舵机
+    // control_position(2, new_position_y);  // Y轴舵机
 
 }
 
 
-// 题目三
+// 题目三 - 自适应瞄准系统
 void Topic_3(void)
 {
-
+    static uint8_t init_flag = 0;
     
+    // 只在第一次调用时初始化
+    if (init_flag == 0) {
+        adaptive_aiming_init();
+        init_flag = 1;
+    }
+    
+    // 执行自适应瞄准更新
+    adaptive_aiming_update();
 }
 
 
@@ -118,4 +132,103 @@ float angle_add_90(float angle)
     }
     
     return result;
+}
+
+// 自适应瞄准控制器实例
+AdaptiveAiming_t aiming_x;  // X轴瞄准控制器
+AdaptiveAiming_t aiming_y;  // Y轴瞄准控制器
+
+// 自适应瞄准初始化函数
+void adaptive_aiming_init(void)
+{
+    // 初始化X轴瞄准控制器
+    aiming_x.scale_factor = 1.0f;        // 初始比例系数
+    aiming_x.last_error = 0;             // 上一次误差
+    aiming_x.overshoot_count = 0;        // 过冲计数
+    aiming_x.min_scale = 0.1f;           // 最小比例系数
+    aiming_x.max_scale = 2.0f;           // 最大比例系数
+    aiming_x.stable_count = 0;           // 稳定计数
+    
+    // 初始化Y轴瞄准控制器
+    aiming_y.scale_factor = 1.0f;        
+    aiming_y.last_error = 0;             
+    aiming_y.overshoot_count = 0;        
+    aiming_y.min_scale = 0.1f;           
+    aiming_y.max_scale = 2.0f;           
+    aiming_y.stable_count = 0;           
+}
+
+// 单轴自适应瞄准计算函数
+float adaptive_aiming_calculate(AdaptiveAiming_t* aiming, int current_error, float base_step)
+{
+    // 如果误差很小，认为已经稳定
+    if (abs(current_error) <= 3) {
+        aiming->stable_count++;
+        if (aiming->stable_count > 5) {
+            return 0;  // 停止调整
+        }
+    } else {
+        aiming->stable_count = 0;
+    }
+    
+    // 检查是否发生过冲（误差符号变化）
+    if ((aiming->last_error > 0 && current_error < 0) || 
+        (aiming->last_error < 0 && current_error > 0)) {
+        // 发生过冲，缩小比例系数
+        aiming->overshoot_count++;
+        aiming->scale_factor *= 0.8f;  // 每次过冲缩小到80%
+        
+        // 限制最小比例系数
+        if (aiming->scale_factor < aiming->min_scale) {
+            aiming->scale_factor = aiming->min_scale;
+        }
+    } else if (aiming->overshoot_count == 0) {
+        // 如果没有发生过冲，可以适当增加比例系数（更积极）
+        aiming->scale_factor *= 1.05f;  // 缓慢增加5%
+        
+        // 限制最大比例系数
+        if (aiming->scale_factor > aiming->max_scale) {
+            aiming->scale_factor = aiming->max_scale;
+        }
+    }
+    
+    // 计算控制量（基于误差方向和比例系数）
+    float control_output = current_error * base_step * aiming->scale_factor;
+    
+    // 确保最小步长限制（绝对值至少为8）
+    if (fabsf(control_output) > 0 && fabsf(control_output) < 8) {
+        control_output = (control_output > 0) ? 8 : -8;
+    }
+    
+    // 更新历史误差
+    aiming->last_error = current_error;
+    
+    return control_output;
+}
+
+// 自适应瞄准主更新函数
+void adaptive_aiming_update(void)
+{
+    // 基础步长（可根据实际情况调整）
+    float base_step_x = 0.5f;  // X轴基础步长
+    float base_step_y = 0.5f;  // Y轴基础步长
+    
+    // 计算X轴控制量
+    float control_x = adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
+    
+    // 计算Y轴控制量
+    float control_y = adaptive_aiming_calculate(&aiming_y, target_angle_y, base_step_y);
+    
+    // 只有当控制量不为0时才执行舵机控制
+    if (fabsf(control_x) >= 8) {
+        // 计算X轴新位置
+        uint16_t new_position_x = (uint16_t)(STS_Data[1].Position + control_x);
+        control_position(1, new_position_x);  // 控制X轴舵机
+    }
+    
+    if (fabsf(control_y) >= 8) {
+        // 计算Y轴新位置
+        uint16_t new_position_y = (uint16_t)(STS_Data[2].Position + control_y);
+        control_position(2, new_position_y);  // 控制Y轴舵机
+    }
 }

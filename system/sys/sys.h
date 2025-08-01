@@ -20,7 +20,8 @@
 #include "Hardware/Servo/Servo.h"
 #include "system/topic/topic.h"
 #include "Hardware/Servo/Servo.h"
-
+#include "Hardware/key/key.h"
+#include "Hardware/Serial/Serial_1.h"
 /* 基本数据类型定义 */
 typedef unsigned char  uint8_t;    /* 无符号8位整型 */
 typedef signed   char  int8_t;     /* 有符号8位整型 */
@@ -52,7 +53,8 @@ extern float left_encoder_value;
 // 右编码器��?
 extern float right_encoder_value;
 
-
+extern int target_angle_x; //定义一个目标角度变量
+extern int target_angle_y; //定义一个目标角度变量
 // // 右轮PID
 // extern pid right;
 // // 左轮PID

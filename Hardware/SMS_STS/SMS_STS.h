@@ -252,6 +252,7 @@ extern SMS_STS_Data_t STS_Data[SMS_STS_MAX_SERVOS + 1];
 typedef struct {
     uint8_t id;          // 舵机ID
     float angle;		//角度做任务
+    uint16_t position;	//位置做任务
 } MotorStatus;
 
 // 导出全局舵机状态数组
@@ -348,5 +349,7 @@ void control(uint8_t id, float angle);
  *     3. 驱动后会立即发送读取指令以获取舵机的最新位置
  ****************************************************************/
 void Update_Servos(void);
+void control_position(uint8_t id,uint16_t position);
+void Update_Servos_Position(void);
 
 #endif

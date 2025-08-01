@@ -1,13 +1,5 @@
 {
     "files.associations": {
-        "serial.h": "c",
-        "cstdint": "cpp",
-        "oled.h": "c",
-        "ti_msp_dl_config.h": "c",
-        "encoder.h": "c",
-        "delay.h": "c",
-        "sys.h": "c",
-        "tracking.h": "c",
-        "sms_sts.h": "c"
+        "ti_msp_dl_config.h": "c"
     }
 }

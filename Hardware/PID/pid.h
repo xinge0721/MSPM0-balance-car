@@ -66,7 +66,7 @@ void mithon_run_pid_clear(void);
 
 
 //舵机PID
-float Position_PID_1(float Position,float Target);
-float Position_PID_2(float Position,float Target);
+float Position_PID_X(float Position,float Target);
+float Position_PID_Y(float Position,float Target);
 
 #endif
