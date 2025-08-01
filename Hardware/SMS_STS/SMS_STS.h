@@ -239,6 +239,7 @@ typedef struct
 {
     uint8_t ID;                // 舵机ID号
     uint16_t Position;         // 舵机当前位置(原始值)
+    int32_t SignedPosition;    // 带符号的位置值(负数表示反方向)
     int8_t Direction;          // 方向: 1=正方向，-1=负方向
     uint16_t ActualPosition;   // 实际位置值(去除方向位)
     float Angle;               // 计算得到的实际角度值(带方向)
@@ -349,7 +350,7 @@ void control(uint8_t id, float angle);
  *     3. 驱动后会立即发送读取指令以获取舵机的最新位置
  ****************************************************************/
 void Update_Servos(void);
-void control_position(uint8_t id,uint16_t position);
+void control_position(uint8_t id, int32_t signed_position);
 void Update_Servos_Position(void);
 
 #endif

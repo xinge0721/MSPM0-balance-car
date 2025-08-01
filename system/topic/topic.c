@@ -81,16 +81,16 @@ float Position1 = 30,Position2 = 30; //舵机当前位置
 
 void Topic_2(void)
 {
-    // 使用PID控制舵机X轴（ID=1），输入当前位置和累计目标位置
-    float pid_output_x = Position_PID_X(STS_Data[1].Position, 2000);
-    // 使用PID控制舵机Y轴（ID=2），输入当前位置和累计目标位置  
-    // float pid_output_y = Position_PID_Y(STS_Data[2].Position, 2000);
+    // 使用PID控制舵机X轴（ID=1），使用带符号位置值
+    float pid_output_x = Position_PID_X(STS_Data[1].SignedPosition, 2000);
+    // 使用PID控制舵机Y轴（ID=2），使用带符号位置值  
+    // float pid_output_y = Position_PID_Y(STS_Data[2].SignedPosition, 2000);
     
-    // 将PID输出作为位置增量，计算新的目标位置
-    uint16_t new_position_x = (uint16_t)(STS_Data[1].Position + pid_output_x);
-    // uint16_t new_position_y = (uint16_t)(STS_Data[2].Position + pid_output_y);
+    // 将PID输出作为位置增量，计算新的目标位置（支持负数）
+    int32_t new_position_x = (int32_t)(STS_Data[1].SignedPosition + pid_output_x);
+    // int32_t new_position_y = (int32_t)(STS_Data[2].SignedPosition + pid_output_y);
     
-    // 直接使用位置控制舵机，不限制范围，支持多圈
+    // 使用带符号位置控制舵机，支持负数位置
     control_position(1, new_position_x);  // X轴舵机
     // control_position(2, new_position_y);  // Y轴舵机
 
@@ -100,16 +100,16 @@ void Topic_2(void)
 // 题目三 - 自适应瞄准系统
 void Topic_3(void)
 {
-    static uint8_t init_flag = 0;
+    // static uint8_t init_flag = 0;
     
-    // 只在第一次调用时初始化
-    if (init_flag == 0) {
-        adaptive_aiming_init();
-        init_flag = 1;
-    }
+    // // 只在第一次调用时初始化
+    // if (init_flag == 0) {
+    //     adaptive_aiming_init();
+    //     init_flag = 1;
+    // }
     
-    // 执行自适应瞄准更新
-    adaptive_aiming_update();
+    // // 执行自适应瞄准更新
+    // adaptive_aiming_update();
 }
 
 
@@ -119,22 +119,22 @@ void Topic_4(void)
 
 }
 
-// 角度转换函数：输入角度+90度，结果保持在-180~180范围内
-float angle_add_90(float angle)
-{
-    float result = angle + 75.0f;
+// // 角度转换函数：输入角度+90度，结果保持在-180~180范围内
+// float angle_add_90(float angle)
+// {
+//     float result = angle + 75.0f;
     
-    // 保持角度在-180到180范围内
-    if (result > 180.0f) {
-        result -= 360.0f;
-    } else if (result < -180.0f) {
-        result += 360.0f;
-    }
+//     // 保持角度在-180到180范围内
+//     if (result > 180.0f) {
+//         result -= 360.0f;
+//     } else if (result < -180.0f) {
+//         result += 360.0f;
+//     }
     
-    return result;
-}
+//     return result;
+// }
 
-// 自适应瞄准控制器实例
+// // 自适应瞄准控制器实例
 AdaptiveAiming_t aiming_x;  // X轴瞄准控制器
 AdaptiveAiming_t aiming_y;  // Y轴瞄准控制器
 
@@ -221,14 +221,14 @@ void adaptive_aiming_update(void)
     
     // 只有当控制量不为0时才执行舵机控制
     if (fabsf(control_x) >= 8) {
-        // 计算X轴新位置
-        uint16_t new_position_x = (uint16_t)(STS_Data[1].Position + control_x);
+        // 计算X轴新位置（使用带符号位置值，支持负数）
+        int32_t new_position_x = (int32_t)(STS_Data[1].SignedPosition + control_x);
         control_position(1, new_position_x);  // 控制X轴舵机
     }
     
     if (fabsf(control_y) >= 8) {
-        // 计算Y轴新位置
-        uint16_t new_position_y = (uint16_t)(STS_Data[2].Position + control_y);
+        // 计算Y轴新位置（使用带符号位置值，支持负数）
+        int32_t new_position_y = (int32_t)(STS_Data[2].SignedPosition + control_y);
         control_position(2, new_position_y);  // 控制Y轴舵机
     }
 }

@@ -140,9 +140,9 @@ void TIMER_0_INST_IRQHandler(void)
                 DL_GPIO_togglePins(LED_PORT, LED_PIN_22_PIN);
             }
 
-            target_angle_x += get_angle_x();
+            target_angle_x = get_angle_x();
 
-            target_angle_y += get_angle_y();
+            target_angle_y = get_angle_y();
 
 
             // 获取左编码器
@@ -159,7 +159,7 @@ void TIMER_0_INST_IRQHandler(void)
             // Control_speed(0,2000);
             if(go_flag ==1)
             {
-                Topic_2();
+                Topic_3();
             }
             break;
 

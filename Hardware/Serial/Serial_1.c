@@ -45,7 +45,7 @@ void uart1_printf(const char *format, ...)
     uart1_send_string(buffer);
 }
 
-volatile uint8_t uart_data_arr[7];
+volatile uint8_t uart1_data_arr[7];
 volatile uint8_t uart_i;
 
 // 定义接收数据变量
@@ -60,7 +60,7 @@ void UART_1_INST_IRQHandler(void)
             //将发送过来的数据保存在变量中
             uart_data = (uint8_t)DL_UART_Main_receiveData(UART_1_INST);
             if(uart_i > 7)uart_i = 0;
-            uart_data_arr[uart_i++] = uart_data;
+            uart1_data_arr[uart_i++] = uart_data;
             SMS_STS_Process_SyncRead_Byte(uart_data);
             break;
 

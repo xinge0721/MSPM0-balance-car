@@ -148,6 +148,9 @@ void SMS_STS_Init(void)
     // 等待500ms让舵机完成初始化
     delay_ms(500);
     delay_ms(500);
+    
+    control_position(1,2048);
+    control_position(2,2048);
 
 }
 
@@ -528,12 +531,16 @@ void SMS_STS_Process_SyncRead_Response(uint8_t *data, uint16_t length)
             // 负方向
             STS_Data[servo_id].Direction = -1;
             STS_Data[servo_id].ActualPosition = position - SMS_STS_DIRECTION_BIT;
+            // 计算带符号的位置值（外部可直接使用的负数位置值）
+            STS_Data[servo_id].SignedPosition = -(int32_t)STS_Data[servo_id].ActualPosition;
             STS_Data[servo_id].Angle = -SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
             STS_Data[servo_id].MultiTurnAngle = -SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
         } else {
             // 正方向
             STS_Data[servo_id].Direction = 1;
             STS_Data[servo_id].ActualPosition = position;
+            // 计算带符号的位置值（外部可直接使用的正数位置值）
+            STS_Data[servo_id].SignedPosition = (int32_t)STS_Data[servo_id].ActualPosition;
             STS_Data[servo_id].Angle = SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
             STS_Data[servo_id].MultiTurnAngle = SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
         }
@@ -713,22 +720,9 @@ void SMS_STS_Receive(uint8_t data)
                     // 检查位置值是否包含方向位（表示负方向）
                     // 根据通信协议，第15位为1(即值>=32768)表示负方向
                     if (position >= SMS_STS_DIRECTION_BIT) {
-                        // 存储方向信息
-                        STS_Data[servo_id].Direction = -1;  // 负方向
-                        // 存储实际位置值（去掉方向位）
-                        STS_Data[servo_id].ActualPosition = position - SMS_STS_DIRECTION_BIT;
-                        // 解析角度值，考虑负方向
-                        STS_Data[servo_id].Angle = -SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
-                        // 计算多圈角度值
-                        STS_Data[servo_id].MultiTurnAngle = -SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
+                        STS_Data[servo_id].SignedPosition = -(int32_t)STS_Data[servo_id].ActualPosition;
                     } else {
-                        // 正方向
-                        STS_Data[servo_id].Direction = 1;   // 正方向
-                        STS_Data[servo_id].ActualPosition = position;
-                        // 解析角度值，正方向
-                        STS_Data[servo_id].Angle = SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
-                        // 计算多圈角度值
-                        STS_Data[servo_id].MultiTurnAngle = SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
+                        STS_Data[servo_id].SignedPosition = (int32_t)STS_Data[servo_id].ActualPosition;
                     }
                 }
             }
@@ -1201,12 +1195,14 @@ void SMS_STS_Process_SyncRead_Byte(uint8_t data)
                             // 负方向
                             STS_Data[servo_id].Direction = -1;
                             STS_Data[servo_id].ActualPosition = position - SMS_STS_DIRECTION_BIT;
+                            STS_Data[servo_id].SignedPosition = -(int32_t)(STS_Data[servo_id].ActualPosition);
                             STS_Data[servo_id].Angle = -SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
                             STS_Data[servo_id].MultiTurnAngle = -SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
                         } else {
                             // 正方向
                             STS_Data[servo_id].Direction = 1;
                             STS_Data[servo_id].ActualPosition = position;
+                            STS_Data[servo_id].SignedPosition = (int32_t)(STS_Data[servo_id].ActualPosition);
                             STS_Data[servo_id].Angle = SMS_STS_Position_To_Angle(STS_Data[servo_id].ActualPosition);
                             STS_Data[servo_id].MultiTurnAngle = SMS_STS_Position_To_Angle_Multi(STS_Data[servo_id].ActualPosition);
                         }
@@ -1287,9 +1283,20 @@ void Update_Servos(void)
 /*控制舵机“位置”
 函数参数:id号,位置值
 */
-void control_position(uint8_t id,uint16_t position)
+void control_position(uint8_t id, int32_t signed_position)
 {
-	// 只保存目标位置到状态数组中
+	// 处理带符号的位置值
+	uint16_t position;
+	
+	if (signed_position >= 0) {
+		// 正数位置直接使用
+		position = (uint16_t)signed_position;
+	} else {
+		// 负数位置加上方向位
+		position = (uint16_t)(-signed_position) + SMS_STS_DIRECTION_BIT;
+	}
+	
+	// 保存处理后的位置到状态数组中
 	motor_status[id].position = position;
 }
 /****************************************************************

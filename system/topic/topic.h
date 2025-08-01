@@ -27,8 +27,8 @@ void Topic_3(void);
 // 题目四
 void Topic_4(void);
 
-// 角度转换函数：输入角度+90度，结果保持在-180~180范围内
-float angle_add_90(float angle);
+// // 角度转换函数：输入角度+90度，结果保持在-180~180范围内
+// float angle_add_90(float angle);
 
 // 自适应瞄准结构体
 typedef struct {
@@ -39,6 +39,10 @@ typedef struct {
     float max_scale;             // 最大比例系数
     uint8_t stable_count;        // 稳定计数
 } AdaptiveAiming_t;
+
+// 自适应瞄准控制器实例（外部声明）
+extern AdaptiveAiming_t aiming_x;  // X轴瞄准控制器
+extern AdaptiveAiming_t aiming_y;  // Y轴瞄准控制器
 
 // 自适应瞄准函数
 void adaptive_aiming_update(void);

@@ -1,6 +1,7 @@
 #include "system/sys/sys.h"
 #include "Hardware/Serial/Serial.h"
 #include "Hardware/APP/APP.h"
+#include "system/topic/topic.h"
 #include <string.h>
 
 float angle = 0.0f;
@@ -39,14 +40,14 @@ void Handle_Key_Events(void)
                         OLED_ShowString(3, 1, "KEY1 Long!");
                     }
                     break;
-    //                 
+                    
                 case 1: // KEY2 事件处理
                     if(KeyCfg[i].KEY_Event == KEY_Event_SingleClick)
                     {
                         target_angle += 10; // 单击KEY2增加角度
                         if(target_angle > 180) target_angle = 180;
                         OLED_ShowString(3, 1, "KEY2 Click!");
-                 }
+                    }
                     break;
                     
                 case 2: // KEY3 事件处理
@@ -115,18 +116,17 @@ int main( void )
     // 按键驱动初始化
     KEY_Init();
     // 这里需要传入对应的串口print的函数，是函数名，因为参数是一个函数指针
-    APP_Init(uart0_printf);
+    // APP_Init(uart0_printf);
     // 维特陀螺仪初始化
-    WIT_Init();
+    // WIT_Init();
     // 初始化系统中断
 
     // 使能(打开) 编码器 端口的中断。左轮编码器的引脚接在GPIOA上
     NVIC_EnableIRQ(GPIOA_INT_IRQn);
     NVIC_EnableIRQ(GPIOB_INT_IRQn);
-        delay_s(2);
-
+    // delay_s(2);
     // SMS_STS_Init();
-    int iiii = 0;
+    // int iiii = 0;
     
     // 显示启动信息
     // OLED_ShowString(1, 1, "Key Demo Start!");
@@ -146,15 +146,24 @@ int main( void )
         if(keynum==1){go_flag=1;}
         Update_Servos_Position();
 
-        // 显示当前位置
-        OLED_ShowString(1, 1, "X:");
-        OLED_ShowNum(1, 3,STS_Data[1].Position,4);
-        OLED_ShowString(2, 1, "Y:");
-        OLED_ShowNum(2, 3,STS_Data[2].Position,4);
+        // 显示自适应瞄准调试信息
+        OLED_ShowString(1, 1, "Pos:");
+        OLED_ShowSignedNum(1, 5, STS_Data[1].SignedPosition, 4);  // X轴舵机带符号位置
+        OLED_ShowString(2, 1, "Err:");
+        OLED_ShowSignedNum(2, 5, target_angle_x, 4);        // X轴像素误差
+        OLED_ShowString(3, 1, "Scl:");
+        OLED_ShowFloatNum(3, 5, aiming_x.scale_factor, 3);  // X轴比例系数
+        OLED_ShowString(4, 1, "Ovr:");
+        OLED_ShowNum(4, 5, aiming_x.overshoot_count, 2);    // X轴过冲次数
 
-
-        float arrrr[3] = {STS_Data[1].Position,STS_Data[2].Position,2000};
-        APP_Send(arrrr,3);
+        // 自适应瞄准系统调试参数发送（只调试X轴舵机）
+        // float arrrr[4] = {
+        //     STS_Data[1].SignedPosition,     // X轴舵机当前带符号位置（支持负数）
+        //     target_angle_x,                 // X轴像素误差（摄像头检测）
+        //     aiming_x.scale_factor,          // X轴自适应比例系数
+        //     aiming_x.overshoot_count        // X轴过冲次数
+        // };
+        // APP_Send(arrrr,4);
 
         // 显示系统状态
         // OLED_ShowString(1, 1, "State:");
@@ -213,14 +222,14 @@ int main( void )
         // OLED_ShowNum(2, 3,motor_status[2].position, 4);
 
         // 串口接收数据显示
-        // OLED_ShowHexNum(3, 1,uart_arr[0], 2);
-        // OLED_ShowHexNum(3, 4,uart_arr[1], 2);
-        // OLED_ShowHexNum(3, 7,uart_arr[2], 2);
-        // OLED_ShowHexNum(3, 10,uart_arr[3], 2);
-        // OLED_ShowHexNum(4, 1,uart_arr[4], 2);
-        // OLED_ShowHexNum(4, 4,uart_arr[5], 2);
-        // OLED_ShowHexNum(4, 7,uart_arr[6], 2);
-        // OLED_ShowHexNum(4, 10,uart_arr[7], 2);
+        OLED_ShowHexNum(3, 1,uart_arr[0], 2);
+        OLED_ShowHexNum(3, 4,uart_arr[1], 2);
+        OLED_ShowHexNum(3, 7,uart_arr[2], 2);
+        OLED_ShowHexNum(3, 10,uart_arr[3], 2);
+        OLED_ShowHexNum(4, 1,uart_arr[4], 2);
+        OLED_ShowHexNum(4, 4,uart_arr[5], 2);
+        OLED_ShowHexNum(4, 7,uart_arr[6], 2);
+        OLED_ShowHexNum(4, 10,uart_arr[7], 2);
         delay_ms(100);
     }
 }

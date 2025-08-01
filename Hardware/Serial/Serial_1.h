@@ -1,5 +1,5 @@
-#ifndef __SERIAL_H
-#define __SERIAL_H
+#ifndef __SERIAL_1_H
+#define __SERIAL_1_H
 #include "../../system/sys/sys.h"
 #include "ti_msp_dl_config.h"
 
@@ -10,8 +10,8 @@ void uart1_printf(const char *format, ...);
 void uart1_process_data(uint8_t data);  // OpenMV数据处理函数
 
 
-extern uint8_t uart_data_arr[];
-extern uint8_t uart_i;
+extern volatile uint8_t uart1_data_arr[];
+extern volatile uint8_t uart_i;
 
 #endif
 
