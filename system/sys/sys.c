@@ -1,4 +1,5 @@
 #include "sys.h"
+#include "Hardware/key/key.h"
 #include "../Hardware/SMS_STS/SMS_STS.h"
 //#include "mspm0_clock.h"
 
@@ -10,6 +11,10 @@ float right_encoder_value = 0;
 // 目标角度变量定义
 int target_angle_x = 0;
 int target_angle_y = 0;
+
+// 任务管理变量定义
+TaskState_t current_task_state = TASK_IDLE;  // 当前任务状态
+uint8_t target_laps = 1;                     // 默认目标圈数为4圈
 
 // 这是中断服务函数(ISR)，专门处理第一组(Group 1)的中断
 // 当GPIOA或者GPIOB上我们设定好的引脚电平发生变化时，程序就会暂停正在做的事情，
@@ -128,7 +133,7 @@ void TIMER_0_INST_IRQHandler(void)
         {
             LED_count ++;
                 
-            // 每10ms扫描一次按键状态机（支持5个按键）
+            // 按键状态机暂时注释，改用简单的主函数检测
             // KEY_ReadStateMachine(0); // 扫描KEY1
             // KEY_ReadStateMachine(1); // 扫描KEY2
             // KEY_ReadStateMachine(2); // 扫描KEY3
@@ -157,10 +162,15 @@ void TIMER_0_INST_IRQHandler(void)
             {
             }
 
-            // Control_speed(0,2000);
-            if(go_flag ==1)
+            // 根据当前任务状态调度不同的任务
+            if(current_task_state == TASK_1_RUNNING)
             {
-                // 启动自适应瞄准系统（10ms周期调用）
+                // 执行任务一（循迹）
+                Topic_1();
+            }
+            else if(current_task_state == TASK_3_RUNNING)
+            {
+                // 执行任务三（自适应瞄准）
                 Topic_3();
             }
             break;

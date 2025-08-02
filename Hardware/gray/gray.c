@@ -26,7 +26,7 @@ uint8_t A_stable=0; // 防误判处理后的稳定状态
 // 防误判处理相关变量
 static uint8_t debounce_counter = 0;     // 消抖计数器
 static uint8_t last_state = 0;           // 上一次的状态
-static const uint8_t DEBOUNCE_THRESHOLD = 20; // 消抖阈值（连续20次相同状态才认为稳定）
+static const uint8_t DEBOUNCE_THRESHOLD = 10; // 消抖阈值（连续20次相同状态才认为稳定）
 
 // 使用示例
 int process_sensors()

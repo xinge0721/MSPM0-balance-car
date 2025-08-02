@@ -13,7 +13,10 @@ extern uint32_t total_distance;
 extern volatile int Encoder_Left_Value ;
 extern volatile int Encoder_Right_Value ;
 extern volatile int Encoder_i_Value ;
-
+// 里程计算变量
+extern uint32_t total_distance;       // 总行驶距离(米)
+extern uint32_t cur_left ;      // 上次左轮计数
+extern uint32_t cur_right ;     // 上次右轮计数
 // 编码器中断处理函数
 void GROUP1_IRQHandler(void);
 

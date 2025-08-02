@@ -10,11 +10,22 @@ uint8_t Topic_yaw = 0;
 
 uint8_t Time_cont;
 
+uint8_t zhuanwan = 0;
+extern uint8_t target_laps;  // 使用外部定义的目标圈数
+uint8_t quanshu = 4;
+int small_target = 2200;
+uint8_t chaoshi = 0;
+
+static int prev_left_pulse = 0, prev_right_pulse = 0;
+static int pulse_stable_count = 0;  // 脉冲值不变的连续计数
+
 // 题目一
 void Topic_1(void)
 {
     int err = process_sensors();
     Time_cont++;
+    int current_left_pulse = left_encoder_value;  // 替换为实际左轮脉冲变量
+    int current_right_pulse = right_encoder_value; // 替换为实际右轮脉冲变量
     if(Topic_flag == 0)
     {
         left.ki=5 ,left.kp=0.5; left.kd=0.0;//left.ki=110.0; left.kp=75.0; left.kd=8.0;
@@ -27,74 +38,84 @@ void Topic_1(void)
             Time_cont = 0;
             Topic_flag = 1;
         }
+
     }
     if(Topic_flag == 1)
     {
+
+        if(current_left_pulse == prev_left_pulse && 
+           current_right_pulse == prev_right_pulse)
+        {
+            pulse_stable_count++;  // 脉冲值未变化，计数器增加
+            
+            // 连续5个周期脉冲值不变（可根据需要调整阈值）
+            if(pulse_stable_count > 3) 
+            {
+                chaoshi = 1;  // 触发超时救援
+            }
+        }
+        else 
+        {
+            pulse_stable_count = 0;  // 脉冲有变化，重置计数器
+        }
+        // 更新脉冲记录
+        prev_left_pulse = current_left_pulse;
+        prev_right_pulse = current_right_pulse;
+
         // 保险机制：如果位置环卡住不动，启动小位置环救援
         // 当Time_cont > 80且还没达到目标时，清除累计脉冲并启动小位置环
-        if(Time_cont > 80 && Time_cont % 20 == 0 && 
+        // 原有超时条件保留
+        if(Time_cont > 100 && Time_cont % 20 == 0 && 
            (target_position_right < 1600 || -target_position_left < 1600))
         {
-            // 计算还需要的脉冲数
-            int remaining_right = 1800 - target_position_right;
-            int remaining_left = 1800 - (-target_position_left);
-            int remaining_avg = (remaining_right + remaining_left) / 2;
-            
-            // 清除累计脉冲，重新开始一个小的位置环
-            mithon_run_pid_clear();
-            
-            // 启动小位置环，目标为剩余距离的一部分（比如1/4）
-            int small_target = remaining_avg / 4;
-            if(small_target < 100) small_target = 100; // 最小推力
-            if(small_target > 400) small_target = 400; // 最大推力
-            
-            mithon_run_pid(left.now_speed, right.now_speed, small_target);
+            chaoshi = 1;
         }
-        else
-        {
-            // 正常位置环控制
-            mithon_run_pid(left.now_speed,right.now_speed,1800);
+
+        wei_pid_left.kp = 4.5;
+        wei_pid_right.kp = 3.5;
+
+        // 正常位置环控制
+        if(chaoshi == 0)
+            mithon_run_pid(left.now_speed,right.now_speed,small_target);
+        else {
+            // 触发差速转动（右正左负，原地右转）
+            Control_speed(-800, 800);
+            
+            // 新增：超时状态下也检查是否达到目标
+            if(target_position_right > 1500 && -target_position_left > 1500 && A_stable == 1)
+            {
+                chaoshi = 0;  // 退出超时状态
+            }
         }
-        
+
         // 正常完成条件
-        if(target_position_right > 800 && -target_position_left > 800 && A_stable == 1)
+        if(target_position_right > 1500 && -target_position_left > 1500 && A_stable == 1)
         {
+            chaoshi = 0;
             Time_cont = 0;
-            Topic_flag = 0;
+            zhuanwan++;
+            if(zhuanwan == 4)  // 完成一圈（4个转弯）
+            {
+                target_laps--;     // 剩余圈数减1
+                zhuanwan = 0;  // 重置转弯计数器，开始下一圈
+            }
+            if(target_laps == 0)   // 所有圈数完成
+                Topic_flag = 3;  // 进入停车状态
+            else 
+                Topic_flag = 0;  // 继续下一圈或下一个转弯
+            small_target = 1900;
             clear_mileage();
             mithon_run_pid_clear();
         }
-        
-        // 强制完成条件（防止无限循环）
-        if(Time_cont > 200)
-        {
-            Time_cont = 0;
-            Topic_flag = 0;
-            clear_mileage();
-            mithon_run_pid_clear();
-        }
+    
+    }
+    else if (Topic_flag == 3)
+    {
+        stopcar();
+        current_task_state = TASK_IDLE;  // 任务完成，重置为空闲状态
     }
 }
 
-// 题目二
-float Position1 = 30,Position2 = 30; //舵机当前位置
-
-void Topic_2(void)
-{
-    // 使用PID控制舵机X轴（ID=1），使用带符号位置值
-    float pid_output_x = Position_PID_X(STS_Data[1].SignedPosition, 2000);
-    // 使用PID控制舵机Y轴（ID=2），使用带符号位置值  
-    // float pid_output_y = Position_PID_Y(STS_Data[2].SignedPosition, 2000);
-    
-    // 将PID输出作为位置增量，计算新的目标位置（支持负数）
-    int32_t new_position_x = (int32_t)(STS_Data[1].SignedPosition + pid_output_x);
-    // int32_t new_position_y = (int32_t)(STS_Data[2].SignedPosition + pid_output_y);
-    
-    // 使用带符号位置控制舵机，支持负数位置
-    control_position(1, new_position_x);  // X轴舵机
-    // control_position(2, new_position_y);  // Y轴舵机
-
-}
 
 
 // 题目三 - 自适应瞄准系统
@@ -112,11 +133,7 @@ void Topic_3(void)
     adaptive_aiming_update();
 }
 
-// 题目四
-void Topic_4(void)
-{
 
-}
 
 // // 角度转换函数：输入角度+90度，结果保持在-180~180范围内
 // float angle_add_90(float angle)
@@ -183,7 +200,7 @@ float adaptive_aiming_calculate(AdaptiveAiming_t* aiming, int current_error, flo
         }
     } else if (aiming->overshoot_count == 0) {
         // 如果没有发生过冲，可以适当增加比例系数（更积极）
-        aiming->scale_factor *= 1.05f;  // 缓慢增加10%
+        aiming->scale_factor *= 1.1f;  // 缓慢增加10%
         
         // 限制最大比例系数
         if (aiming->scale_factor > aiming->max_scale) {
@@ -252,8 +269,16 @@ void adaptive_aiming_update(void)
     }
     
     // 保持你的算法精髓：自适应计算（会自动学习最佳比例系数）
-    float control_x = -adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
+    float control_x = adaptive_aiming_calculate(&aiming_x, target_angle_x, base_step_x);
     float control_y = -adaptive_aiming_calculate(&aiming_y, target_angle_y, base_step_y);
+    
+    // 根据OpenMv_status和按键一状态控制x轴转动方向
+    // 只有当OpenMv_status==0且按下按键一时才反转
+    // extern uint8_t key1_pressed;  // 声明外部变量
+    // if(OpenMv_status == 0 && key1_pressed == 1) {
+    //     control_x = -control_x;  // x轴转动角度取反
+    // }
+    // 其他情况（OpenMv_status!=0 或 没按按键一）都正常转动
     
     // 保持舵机最小步长限制的同时执行控制
     if (fabsf(control_x) >= 8) {

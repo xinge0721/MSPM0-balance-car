@@ -55,6 +55,18 @@ extern float right_encoder_value;
 
 extern int target_angle_x; //定义一个目标角度变量
 extern int target_angle_y; //定义一个目标角度变量
+
+// 任务状态枚举定义
+typedef enum {
+    TASK_IDLE = 0,     // 空闲状态
+    TASK_1_RUNNING,    // 任务一运行中
+    TASK_3_RUNNING     // 任务三运行中
+} TaskState_t;
+
+// 任务管理变量
+extern TaskState_t current_task_state;  // 当前任务状态
+extern uint8_t target_laps;             // 目标圈数
+extern uint8_t quanshu;                 // 任务一的圈数变量（在topic.c中定义）
 // // 右轮PID
 // extern pid right;
 // // 左轮PID

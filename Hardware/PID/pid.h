@@ -32,6 +32,16 @@ extern int target_position_right ;
 // 左轮累计目标值
 extern int target_position_left ;
 
+typedef struct {
+	float p_last_err;
+	float Integral;
+	float kp;
+	float ki;
+	float kd;
+}wei_pid;
+
+extern wei_pid wei_pid_left;
+extern wei_pid wei_pid_right;
 
 #define PID_run(pid_speed_left,pid_speed_right,pid_turn_right,i,speed) mithon_run(&pid_speed_left,&pid_speed_right,&pid_turn_right,i,speed)
 

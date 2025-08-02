@@ -111,15 +111,34 @@ void stopcar(void)//刹车
 
 }
 
-typedef struct {
-	float p_last_err;
-	float Integral;
-	float kp;
-	float ki;
-	float kd;
-}wei_pid;
+void zhunw(pid *pid_speed_left, pid *pid_speed_right)//转弯
+{
+	left.ki=48.0; left.kp=0.0; left.kd=0.0;
+    right.ki=48.0; right.kp=0.0; right.kd=0.0;
+	int Lpwm=0;
+	int Rpwm=0;
+	//=p_pid(pid_l,NowposithonL,0);//积累脉冲(现在脉冲个数)，目标脉冲
+	//int Rpwm=p_pid(pid_r,NowposithonR,posithon);
 
-wei_pid wei_pid_left = {0,0,3.5,0,0};
+	//
+//	Lpwm=Velocity_Restrict(Lpwm,TargetVelocity);//限幅位置环输出的PWM TargetVelocity
+	//Rpwm=Velocity_Restrict(Rpwm,TargetVelocity);//限幅位置环输出的PWM TargetVelocity
+
+	//Lpwm=Lpwm/39;//PWM值转换为速度值 49为转换参数
+	//Rpwm=Rpwm/39;//PWM值转换为速度值 49为转换参数
+
+	Lpwm=FeedbackControl(pid_speed_left,-12,left.now_speed);//左速度环,速度环闭环控制 相当于位置环的输出为速度环的输入，形成串级PID
+
+	Rpwm =FeedbackControl(pid_speed_right,12,right.now_speed);//右速度环,速度环闭环控制 相当于位置环的输出为速度环的输入，形成串级PID
+
+	Control_speed(Lpwm,Rpwm);
+
+}
+
+
+
+
+wei_pid wei_pid_left = {0,0,3.3,0,0};
 wei_pid wei_pid_right = {0,0,2.2,0,0};
 
 //位置式pid位置控制
